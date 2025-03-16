@@ -117,11 +117,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-<<<<<<< HEAD
 	public String deleteUserByUsername(String username) {
-=======
-	public String deleteUserByUsernmae(String username) {
->>>>>>> c8b7e423bf58468af87d988072869ce6d2389aff
 		// TODO Auto-generated method stub
 		Optional<UserEntity> user = repo.findByUsername(username);
 
@@ -191,11 +187,6 @@ public class UserServiceImpl implements UserService {
 		// Extract the username from the decoded token
 		String tokenUsername = new String(Base64.getDecoder().decode(username), StandardCharsets.UTF_8);
 
-<<<<<<< HEAD
-		//
-=======
-		// 
->>>>>>> c8b7e423bf58468af87d988072869ce6d2389aff
 		Long time = Long.parseLong(new String(Base64.getDecoder().decode(timestamp)));
 
 		// Now validate the token
@@ -223,5 +214,4 @@ public class UserServiceImpl implements UserService {
 			throw new RuntimeException("Invalid token format.", e);
 		}
 	}
-
 }
