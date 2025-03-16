@@ -1529,6 +1529,7 @@
 2025-03-11 02:03:25,523 [Worker-10: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\main\resources to target\classes
 2025-03-11 02:03:25,530 [Worker-10: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\main\resources to target\classes
 2025-03-11 02:03:25,533 [Worker-10: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory C:\Users\Unmeet Patel\OneDrive\Desktop\Deep\OPL-Internship\Final_Sem_Project\Flight_Ticket_Booking_System\src\test\resources
+<<<<<<< HEAD
 2025-03-14 16:38:39,972 [Worker-2: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is up-to-date. Trying to read.
 2025-03-14 16:39:00,550 [Worker-2: Update Maven projects configuration] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Update started
 2025-03-14 16:39:09,300 [Worker-2: Update Maven projects configuration] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.flight:Flight_Ticket_Booking_System:0.0.1-SNAPSHOT @ C:\Users\Unmeet Patel\OneDrive\Desktop\Deep\OPL-Internship\Final_Sem_Project\Flight_Ticket_Booking_System\pom.xml.
@@ -1679,3 +1680,5 @@
 2025-03-16 23:45:32,213 [Worker-17: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\main\resources to target\classes
 2025-03-16 23:45:32,222 [Worker-17: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\main\resources to target\classes
 2025-03-16 23:45:32,227 [Worker-17: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory C:\Users\Unmeet Patel\OneDrive\Desktop\Deep\OPL-Internship\Final_Sem_Project\Flight_Ticket_Booking_System\src\test\resources
+=======
+>>>>>>> c8b7e423bf58468af87d988072869ce6d2389aff

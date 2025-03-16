@@ -16,7 +16,11 @@ public interface UserService {
 
 	public String updateUserByUsername(UserProxy userProxy);
 
+<<<<<<< HEAD
 	public String deleteUserByUsername(String username);
+=======
+	public String deleteUserByUsernmae(String username);
+>>>>>>> c8b7e423bf58468af87d988072869ce6d2389aff
 
 	public LoginResp login(LoginReq req);
 

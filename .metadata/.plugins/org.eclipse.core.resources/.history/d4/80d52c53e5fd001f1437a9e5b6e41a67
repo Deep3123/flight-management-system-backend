@@ -1,0 +1,5 @@
+package com.flight.management.proxy;
+
+public class LoginResp {
+
+}

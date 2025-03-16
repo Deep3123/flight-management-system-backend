@@ -46,9 +46,15 @@ INDEX VERSION 1.134+C:\Users\Unmeet Patel\OneDrive\Desktop\Deep\OPL-Internship\F
 1743916841.index
 1897136174.index
 145079238.index
+<<<<<<< HEAD
 2655113846.index
 1745745116.index
 3812918821.index
+=======
+3812918821.index
+1745745116.index
+2655113846.index
+>>>>>>> c8b7e423bf58468af87d988072869ce6d2389aff
 2726791462.index
 2272336925.index
 2363795083.index
@@ -70,9 +76,15 @@ INDEX VERSION 1.134+C:\Users\Unmeet Patel\OneDrive\Desktop\Deep\OPL-Internship\F
 1867045020.index
 426363595.index
 3717638543.index
+<<<<<<< HEAD
 3139427385.index
 1509751358.index
 3337059241.index
+=======
+1509751358.index
+3337059241.index
+3139427385.index
+>>>>>>> c8b7e423bf58468af87d988072869ce6d2389aff
 2895952085.index
 3887456040.index
 2805186352.index
@@ -90,11 +102,19 @@ INDEX VERSION 1.134+C:\Users\Unmeet Patel\OneDrive\Desktop\Deep\OPL-Internship\F
 2033592432.index
 1973746894.index
 4241678598.index
+<<<<<<< HEAD
 290874779.index
 362310330.index
 2309441678.index
 519071898.index
 4019281147.index
+=======
+519071898.index
+2309441678.index
+362310330.index
+4019281147.index
+290874779.index
+>>>>>>> c8b7e423bf58468af87d988072869ce6d2389aff
 154898126.index
 4242551837.index
 3425782005.index

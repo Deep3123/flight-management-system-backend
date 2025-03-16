@@ -1,5 +1,6 @@
 package com.flight.management.controller;
 
+<<<<<<< HEAD
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,4 +102,8 @@ public class FlightController {
 					HttpStatus.NOT_FOUND);
 	}
 
+=======
+public class FlightController {
+
+>>>>>>> c8b7e423bf58468af87d988072869ce6d2389aff
 }

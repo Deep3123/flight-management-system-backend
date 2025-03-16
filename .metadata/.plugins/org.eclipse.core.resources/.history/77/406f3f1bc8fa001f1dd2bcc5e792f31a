@@ -1,0 +1,5 @@
+package com.flight.management.service.impl;
+
+public class CustomUserDetails {
+
+}
