@@ -1,6 +1,7 @@
 package com.flight.management.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.flight.management.proxy.LoginReq;
 import com.flight.management.proxy.LoginResp;
+import com.flight.management.proxy.ResetPassword;
 import com.flight.management.proxy.Response;
 import com.flight.management.proxy.UserProxy;
 import com.flight.management.service.UserService;
@@ -76,10 +78,10 @@ public class UserController {
 
 	@GetMapping("/delete-user-by-username/{username}")
 	public ResponseEntity<?> deleteUserByUsernmae(@Valid @PathVariable("username") String username) {
-		String s = service.deleteUserByUsernmae(username);
+		String s = service.deleteUserByUsername(username);
 
 		if (s != null && !s.isEmpty())
-			return new ResponseEntity<>(s, HttpStatus.OK);
+			return new ResponseEntity<>(new Response(s, HttpStatus.OK.toString()), HttpStatus.OK);
 
 		else
 			return new ResponseEntity<>(new Response("User not found with given username, please verify the username!!",
@@ -97,4 +99,37 @@ public class UserController {
 				"User not valid with given username and password, please verify the username and password!!",
 				HttpStatus.UNAUTHORIZED.toString()), HttpStatus.UNAUTHORIZED);
 	}
+
+	@PostMapping("/forgot-password")
+	public ResponseEntity<?> forgotPassword(@RequestBody String email) {
+		String s = service.forgotPassword(email);
+
+		if (s.equals("Password reset email sent."))
+			return new ResponseEntity<>(new Response(s, HttpStatus.OK.toString()), HttpStatus.OK);
+
+		return new ResponseEntity<>(new Response(s, HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
+	}
+
+	@PostMapping("/reset-password/{username}/{timestamp}/{token}")
+	public ResponseEntity<?> resetPassword(@PathVariable("username") String username,
+			@PathVariable("timestamp") String timestamp, @PathVariable("token") String token,
+			@RequestBody ResetPassword proxy) {
+		try {
+			// Pass username and token to service for processing
+			String s = service.resetPassword(username, timestamp, token, proxy);
+
+			if (s.equals("Password not matching.") || s.equals("Username in token does not match provided username!")
+					|| s.equals("Token is expired, please request again to reset your password!")
+					|| s.equals("User was not found to perform this action!")) {
+				return new ResponseEntity<>(new Response(s, HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
+			}
+
+			return new ResponseEntity<>(new Response(s, HttpStatus.OK.toString()), HttpStatus.OK);
+
+		} catch (IllegalArgumentException e) {
+			return new ResponseEntity<>(new Response("Invalid token format.", HttpStatus.BAD_REQUEST.toString()),
+					HttpStatus.BAD_REQUEST);
+		}
+	}
+
 }
