@@ -1,5 +1,6 @@
 package com.flight.management.controller;
 
+<<<<<<< HEAD:Flight_Ticket_Booking_System/Flight_Ticket_Booking_System/src/main/java/com/flight/management/controller/ContactController.java
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,4 +59,13 @@ public class ContactController {
 		return new ResponseEntity<>(new Response("No data to display currently!!!", HttpStatus.NO_CONTENT.toString()),
 				HttpStatus.NO_CONTENT);
 	}
+=======
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/contact")
+public class ContactController {
+	
+>>>>>>> 7b91b131e662fc3e7296914c4ac0bc88a3f9a0e6:Flight_Ticket_Booking_System/src/main/java/com/flight/management/controller/ContactController.java
 }
