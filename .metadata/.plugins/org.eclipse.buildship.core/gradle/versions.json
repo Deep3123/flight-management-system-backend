@@ -1,6 +1,11 @@
 [ {
+<<<<<<< HEAD
+  "version" : "8.14-20250315012726+0000",
+  "buildTime" : "20250315012726+0000",
+=======
   "version" : "8.14-20250310135852+0000",
   "buildTime" : "20250310135852+0000",
+>>>>>>> c8b7e423bf58468af87d988072869ce6d2389aff
   "current" : false,
   "snapshot" : true,
   "nightly" : false,
@@ -9,12 +14,21 @@
   "rcFor" : "",
   "milestoneFor" : "",
   "broken" : false,
+<<<<<<< HEAD
+  "downloadUrl" : "https://services.gradle.org/distributions-snapshots/gradle-8.14-20250315012726+0000-bin.zip",
+  "checksumUrl" : "https://services.gradle.org/distributions-snapshots/gradle-8.14-20250315012726+0000-bin.zip.sha256",
+  "wrapperChecksumUrl" : "https://services.gradle.org/distributions-snapshots/gradle-8.14-20250315012726+0000-wrapper.jar.sha256"
+}, {
+  "version" : "9.0-20250315001642+0000",
+  "buildTime" : "20250315001642+0000",
+=======
   "downloadUrl" : "https://services.gradle.org/distributions-snapshots/gradle-8.14-20250310135852+0000-bin.zip",
   "checksumUrl" : "https://services.gradle.org/distributions-snapshots/gradle-8.14-20250310135852+0000-bin.zip.sha256",
   "wrapperChecksumUrl" : "https://services.gradle.org/distributions-snapshots/gradle-8.14-20250310135852+0000-wrapper.jar.sha256"
 }, {
   "version" : "8.14-20250309001631+0000",
   "buildTime" : "20250309001631+0000",
+>>>>>>> c8b7e423bf58468af87d988072869ce6d2389aff
   "current" : false,
   "snapshot" : true,
   "nightly" : true,
@@ -23,9 +37,15 @@
   "rcFor" : "",
   "milestoneFor" : "",
   "broken" : false,
+<<<<<<< HEAD
+  "downloadUrl" : "https://services.gradle.org/distributions-snapshots/gradle-9.0-20250315001642+0000-bin.zip",
+  "checksumUrl" : "https://services.gradle.org/distributions-snapshots/gradle-9.0-20250315001642+0000-bin.zip.sha256",
+  "wrapperChecksumUrl" : "https://services.gradle.org/distributions-snapshots/gradle-9.0-20250315001642+0000-wrapper.jar.sha256"
+=======
   "downloadUrl" : "https://services.gradle.org/distributions-snapshots/gradle-8.14-20250309001631+0000-bin.zip",
   "checksumUrl" : "https://services.gradle.org/distributions-snapshots/gradle-8.14-20250309001631+0000-bin.zip.sha256",
   "wrapperChecksumUrl" : "https://services.gradle.org/distributions-snapshots/gradle-8.14-20250309001631+0000-wrapper.jar.sha256"
+>>>>>>> c8b7e423bf58468af87d988072869ce6d2389aff
 }, {
   "version" : "8.14-milestone-4",
   "buildTime" : "20250306073633+0000",

@@ -16,7 +16,7 @@ public interface UserService {
 
 	public String updateUserByUsername(UserProxy userProxy);
 
-	public String deleteUserByUsernmae(String username);
+	public String deleteUserByUsername(String username);
 
 	public LoginResp login(LoginReq req);
 

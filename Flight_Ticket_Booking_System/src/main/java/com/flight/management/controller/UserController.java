@@ -78,7 +78,7 @@ public class UserController {
 
 	@GetMapping("/delete-user-by-username/{username}")
 	public ResponseEntity<?> deleteUserByUsernmae(@Valid @PathVariable("username") String username) {
-		String s = service.deleteUserByUsernmae(username);
+		String s = service.deleteUserByUsername(username);
 
 		if (s != null && !s.isEmpty())
 			return new ResponseEntity<>(s, HttpStatus.OK);

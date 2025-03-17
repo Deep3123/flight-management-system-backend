@@ -1,7 +1,8 @@
 package com.flight.management.domain;
 
 import java.util.Date;
-
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,6 +24,10 @@ public class FlightEntity {
 
 	private String flightNumber;
 
+	private Date departureDateAndTime;
+
+	private Date arrivalDateAndTime;
+
 	private Date departureDate;
 
 	private Date arrivalDate;
@@ -39,7 +44,9 @@ public class FlightEntity {
 
 	private String airlineName;
 
+	@CreationTimestamp
 	private Date createdAt;
 
+	@UpdateTimestamp
 	private Date updatedAt;
 }
