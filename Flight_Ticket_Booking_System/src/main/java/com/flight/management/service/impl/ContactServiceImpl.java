@@ -1,7 +1,7 @@
 package com.flight.management.service.impl;
 
 import java.util.List;
-
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.flight.management.domain.ContactEntity;
@@ -29,21 +29,31 @@ public class ContactServiceImpl implements ContactService {
 	}
 
 	@Override
-	public ContactProxy getAllContactUsDetailsByName(String name) {
+	public List<ContactProxy> getAllContactUsDetailsByName(String name) {
 		// TODO Auto-generated method stub
-		return MapperUtil.convertValue(repo.findByName(name).get(), ContactProxy.class);
-	}
+		Optional<List<ContactEntity>> list = repo.findByName(name);
 
-	@Override
-	public String updateContactUsDetails(ContactProxy contactProxy) {
-		// TODO Auto-generated method stub
+		if (list.isPresent())
+			return MapperUtil.convertListofValue(list.get(), ContactProxy.class);
+
 		return null;
 	}
 
-	@Override
-	public String deleteContactUsDetails() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public String updateContactUsDetails(ContactProxy contactProxy) {
+//		// TODO Auto-generated method stub
+//		Optional<List<ContactEntity>> list = repo.findByName(contactProxy.getName());
+//		
+//		if(list.isPresent())
+//		{
+//			
+//		}
+//		return null;
+//	}
 
+//	@Override
+//	public String deleteContactUsDetails() {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 }

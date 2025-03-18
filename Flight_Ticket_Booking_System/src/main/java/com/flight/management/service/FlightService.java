@@ -2,6 +2,7 @@ package com.flight.management.service;
 
 import java.util.List;
 import com.flight.management.proxy.FlightProxy;
+import com.flight.management.proxy.FlightSearchProxy;
 
 public interface FlightService {
 	public String addFlightDetails(FlightProxy flightProxy);
@@ -14,5 +15,5 @@ public interface FlightService {
 
 	public String deleteFlightDetails(String flightNumber);
 
-	public List<FlightProxy> getFlightDetailsByDepartureAndArrival(String departure, String Arrival);
+	public List<FlightProxy> getFlightDetailsByUserDetails(FlightSearchProxy flightSearchProxy);
 }

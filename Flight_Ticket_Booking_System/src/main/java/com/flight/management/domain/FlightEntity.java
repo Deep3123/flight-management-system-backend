@@ -24,10 +24,6 @@ public class FlightEntity {
 
 	private String flightNumber;
 
-	private Date departureDateAndTime;
-
-	private Date arrivalDateAndTime;
-
 	private Date departureDate;
 
 	private Date arrivalDate;
@@ -43,6 +39,8 @@ public class FlightEntity {
 	private Integer durationMinutes;
 
 	private String airlineName;
+
+	private String flightClass;
 
 	@CreationTimestamp
 	private Date createdAt;

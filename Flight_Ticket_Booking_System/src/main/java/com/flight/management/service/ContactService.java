@@ -9,9 +9,9 @@ public interface ContactService {
 
 	public List<ContactProxy> getAllContactUsDetails();
 
-	public ContactProxy getAllContactUsDetailsByName(String name);
+	public List<ContactProxy> getAllContactUsDetailsByName(String name);
 
-	public String updateContactUsDetails(ContactProxy contactProxy);
+//	public String updateContactUsDetails(ContactProxy contactProxy);
 
-	public String deleteContactUsDetails();
+//	public String deleteContactUsDetails(String name);
 }

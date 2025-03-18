@@ -2,12 +2,14 @@ package com.flight.management.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.flight.management.domain.FlightEntity;
 import com.flight.management.proxy.FlightProxy;
+import com.flight.management.proxy.FlightSearchProxy;
 import com.flight.management.repo.FlightRepo;
 import com.flight.management.service.FlightService;
 import com.flight.management.util.MapperUtil;
@@ -48,11 +50,11 @@ public class FlightServiceImpl implements FlightService {
 
 		if (flight.isPresent()) {
 			// Update flight details if not null in the FlightProxy
-			if (flightProxy.getDepartureDateAndTime() != null)
-				flight.get().setDepartureDateAndTime(flightProxy.getDepartureDateAndTime());
+			if (flightProxy.getDepartureDate() != null)
+				flight.get().setDepartureDate(flightProxy.getDepartureDate());
 
-			if (flightProxy.getArrivalDateAndTime() != null)
-				flight.get().setArrivalDateAndTime(flightProxy.getArrivalDateAndTime());
+			if (flightProxy.getArrivalDate() != null)
+				flight.get().setArrivalDate(flightProxy.getArrivalDate());
 
 			if (flightProxy.getDepartureAirport() != null)
 				flight.get().setDepartureAirport(flightProxy.getDepartureAirport());
@@ -95,12 +97,18 @@ public class FlightServiceImpl implements FlightService {
 	}
 
 	@Override
-	public List<FlightProxy> getFlightDetailsByDepartureAndArrival(String departure, String arrival) {
+	public List<FlightProxy> getFlightDetailsByUserDetails(FlightSearchProxy flightSearchProxy) {
 		// TODO Auto-generated method stub
-		Optional<List<FlightEntity>> flightList = repo.findByDepartureAirportAndArrivalAirport(departure, arrival);
+		Optional<List<FlightEntity>> flightList = repo
+				.findByDepartureAirportAndArrivalAirportAndDepartureDateAndArrivalDateAndFlightClass(
+						flightSearchProxy.getDepartureAirport(), flightSearchProxy.getArrivalAirport(),
+						flightSearchProxy.getDepartureDate(), flightSearchProxy.getArrivalDate(),
+						flightSearchProxy.getFlightClass());
 
 		if (flightList.isPresent()) {
-			return MapperUtil.convertListofValue(flightList.get(), FlightProxy.class);
+			return MapperUtil.convertListofValue(flightList.get().stream()
+					.filter(obj -> obj.getSeatsAvailable() >= flightSearchProxy.getPersonCount())
+					.collect(Collectors.toList()), FlightProxy.class);
 		}
 		return null;
 	}

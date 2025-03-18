@@ -1,5 +1,7 @@
 package com.flight.management.proxy;
 
+import java.util.Date;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -28,6 +30,5 @@ public class ContactProxy {
 	@Pattern(regexp = "^[0-9]{10}$", message = "Phone number must be a 10-digit number.")
 	private String phoneNumber;
 
-	@NotNull(message = "Submission date cannot be null.")
-	private String submittedAt; // This could be handled programmatically in the backend
+	private Date submittedAt; // This could be handled programmatically in the backend
 }

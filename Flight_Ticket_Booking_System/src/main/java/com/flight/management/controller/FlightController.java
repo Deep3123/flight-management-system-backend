@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.flight.management.proxy.FlightProxy;
+import com.flight.management.proxy.FlightSearchProxy;
 import com.flight.management.proxy.Response;
 import com.flight.management.service.FlightService;
 
@@ -86,10 +87,9 @@ public class FlightController {
 					HttpStatus.NOT_FOUND);
 	}
 
-	@GetMapping("/get-flight-details-by-departure-and-arrival/{departure}/{arrival}")
-	public ResponseEntity<?> getFlightDetailsByDepartureAndArrival(@Valid @PathVariable("departure") String departure,
-			@Valid @PathVariable("arrival") String arrival) {
-		List<FlightProxy> list = service.getFlightDetailsByDepartureAndArrival(departure, arrival);
+	@GetMapping("/get-flight-details-by-departure-and-arrival")
+	public ResponseEntity<?> getFlightDetailsByUserDetails(@Valid @RequestBody FlightSearchProxy flightSearchProxy) {
+		List<FlightProxy> list = service.getFlightDetailsByUserDetails(flightSearchProxy);
 
 		if (list != null && !list.isEmpty())
 			return new ResponseEntity<>(list, HttpStatus.OK);
