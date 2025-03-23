@@ -1,0 +1,35 @@
+.divider:after,
+.divider:before {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #eee;
+}
+
+.h-custom {
+    height: calc(100% - 73px);
+}
+
+@media (max-width: 450px) {
+    .h-custom {
+        height: 100%;
+    }
+}
+
+.error {
+    color: red;
+    font-size: 0.875rem;
+    border-radius: 5px;
+    margin-top: 5px;
+    padding-left: 5px;
+    background-color: rgb(253, 226, 226);
+}
+
+button:disabled {
+    cursor: not-allowed;
+    /* Display the not-allowed cursor */
+    background-color: gray;
+    border-color: gray;
+    opacity: 0.6;
+    /* Optional: Make the disabled button look less prominent */
+}

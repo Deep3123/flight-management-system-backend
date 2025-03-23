@@ -1,0 +1,12 @@
+@font-face {
+    font-family: 'Emirates'; /* Give the font a name */
+    src: url('assets/fonts/Emirates.otf') format('opentype'),
+         url('assets/fonts/Emirates.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Apply the font globally */
+/* body {
+    font-family: 'Emirates', sans-serif;
+} */

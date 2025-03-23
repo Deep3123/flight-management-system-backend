@@ -1,0 +1,46 @@
+<!-- Navbar -->
+<nav class="navbar shadow navbar-expand-lg navbar-light p-0" style="background-color: rgb(0, 0, 0);">
+    <!-- Container wrapper -->
+    <div class="container-fluid">
+        <!-- Toggle button -->
+        <button data-mdb-collapse-init class="navbar-toggler" type="button" data-mdb-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Collapsible wrapper -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <!-- Navbar brand -->
+            <a class="navbar-brand mt-2 mt-lg-0" href="#">
+                <img src="https://mdbcdn.b-cdn.net/img/logo/mdb-transaprent-noshadows.webp" height="15" alt="MDB Logo"
+                    loading="lazy" />
+            </a>
+            <!-- Left links -->
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0"> <!-- Added mx-auto for centering -->
+                <li class="nav-item">
+                    <a class="nav-link px-4 py-3 fw-bold text-light" href="#">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-4 py-3 fw-bold text-light" href="#">Team</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-4 py-3 fw-bold text-light" href="#">Projects</a>
+                </li>
+            </ul>
+            <!-- Left links -->
+        </div>
+        <!-- Collapsible wrapper -->
+
+        <!-- Right elements -->
+        <div class="d-flex align-items-center">
+            <!-- Login button -->
+            <a routerLink="/login" class="btn btn-outline-light me-3 rounded-pill">Login</a>
+
+            <!-- Signup button -->
+            <a routerLink="/register" class="btn btn-light rounded-pill">Signup</a>
+        </div>
+        <!-- Right elements -->
+    </div>
+    <!-- Container wrapper -->
+</nav>
+<!-- Navbar -->
