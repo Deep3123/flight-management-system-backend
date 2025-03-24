@@ -3,6 +3,7 @@ package com.flight.management.service.impl;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.flight.management.domain.ContactEntity;
 import com.flight.management.proxy.ContactProxy;
@@ -10,6 +11,7 @@ import com.flight.management.repo.ContactRepo;
 import com.flight.management.service.ContactService;
 import com.flight.management.util.MapperUtil;
 
+@Service
 public class ContactServiceImpl implements ContactService {
 
 	@Autowired

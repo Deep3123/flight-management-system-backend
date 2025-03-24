@@ -132,14 +132,20 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public LoginResp login(LoginReq req) {
+
 		// TODO Auto-generated method stub
 		UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(req.getUsername(),
 				req.getPassword());
 
-		Authentication authenticate = manager.authenticate(auth);
+		try {
+			Authentication authenticate = manager.authenticate(auth);
 
-		if (authenticate.isAuthenticated()) {
-			return new LoginResp(req.getUsername(), jwtService.generateToken(req.getUsername()));
+			if (authenticate.isAuthenticated()) {
+				return new LoginResp(req.getUsername(), jwtService.generateToken(req.getUsername()));
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(
+					"User not valid with given username and password, please verify the username and password!!");
 		}
 		return null;
 	}
@@ -159,7 +165,7 @@ public class UserServiceImpl implements UserService {
 
 			String username = Base64.getEncoder().encodeToString(user.get().getUsername().getBytes());
 
-			String url = "http://localhost:8080/user/reset-password/" + username + "/" + timestamp + "/" + encodedToken;
+			String url = "http://localhost:4200/reset-password/" + username + "/" + timestamp + "/" + encodedToken;
 			System.err.println(url);
 
 			SimpleMailMessage mailMessage = new SimpleMailMessage();
@@ -170,7 +176,7 @@ public class UserServiceImpl implements UserService {
 
 			javaMailSender.send(mailMessage);
 
-			return "Password reset email sent.";
+			return "An email has been sent with a link to reset your password. Please check your inbox and follow the instructions to reset your password.";
 		}
 		return "User with the provided email not found.";
 	}
