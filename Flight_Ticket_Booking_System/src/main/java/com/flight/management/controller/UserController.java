@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +24,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(value = "http://localhost:4200")
 public class UserController {
 	@Autowired
 	private UserService service;
@@ -104,7 +106,8 @@ public class UserController {
 	public ResponseEntity<?> forgotPassword(@RequestBody String email) {
 		String s = service.forgotPassword(email);
 
-		if (s.equals("Password reset email sent."))
+		if (s.equals(
+				"An email has been sent with a link to reset your password. Please check your inbox and follow the instructions to reset your password."))
 			return new ResponseEntity<>(new Response(s, HttpStatus.OK.toString()), HttpStatus.OK);
 
 		return new ResponseEntity<>(new Response(s, HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
