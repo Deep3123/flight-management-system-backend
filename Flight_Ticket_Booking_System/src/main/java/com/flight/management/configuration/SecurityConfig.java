@@ -36,7 +36,7 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(csrf -> csrf.disable());
 //		http.cors(c -> c);
-		http.cors(c->c);
+		// http.cors(c->c);
 		http.authorizeHttpRequests(auth -> auth.requestMatchers("/user/register", "/user/login").permitAll()
 				.requestMatchers("/user/get-all-user-details").hasAuthority("ADMIN")
 				.requestMatchers("/flight/add-flight-details", "/flight/update-flight-details",
