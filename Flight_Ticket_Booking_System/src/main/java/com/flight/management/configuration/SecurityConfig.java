@@ -32,7 +32,15 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(csrf -> csrf.disable());
-		http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+		http.authorizeHttpRequests(auth -> auth.requestMatchers("/user/register", "/user/login").permitAll()
+				.requestMatchers("/user/get-all-user-details").hasAuthority("ADMIN")
+				.requestMatchers("/flight/add-flight-details", "/flight/update-flight-details",
+						"/flight/delete-flight-details/**", "/flight/get-all-flights-details",
+						"/flight/get-flights-details-by-flight-number/**")
+				.hasAuthority("ADMIN")
+				.requestMatchers("/contact/get-all-contact-us-details",
+						"/contact/get-all-contact-us-details-by-name/**")
+				.hasAuthority("ADMIN").anyRequest().authenticated());
 		http.formLogin(Customizer.withDefaults());
 		http.httpBasic(Customizer.withDefaults());
 		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
