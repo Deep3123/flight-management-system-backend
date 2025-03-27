@@ -1,0 +1,5 @@
+package com.flight.management.filter;
+
+public class JwtFilter {
+
+}

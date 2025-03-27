@@ -1,0 +1,8 @@
+package com.flight.management.filter;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class JwtFilter {
+
+}
