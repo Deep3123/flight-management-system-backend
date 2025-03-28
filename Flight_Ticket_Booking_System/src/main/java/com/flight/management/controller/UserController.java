@@ -22,9 +22,9 @@ import com.flight.management.service.UserService;
 
 import jakarta.validation.Valid;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(value = "http://localhost:4200")
 public class UserController {
 	@Autowired
 	private UserService service;
@@ -41,6 +41,7 @@ public class UserController {
 
 	@GetMapping("/get-all-user-details")
 	public ResponseEntity<?> getAllUsersDetails() {
+		System.err.println("Control is here.");
 		List<UserProxy> list = service.getAllUsersDetails();
 
 		if (list != null && !list.isEmpty())

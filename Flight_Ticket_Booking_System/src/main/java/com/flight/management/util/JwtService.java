@@ -26,8 +26,8 @@ public class JwtService {
 		// signing algorithm
 		// Token valid for 10 minutes
 		return Jwts.builder().claims().add(claims).subject(userName).issuedAt(new Date(System.currentTimeMillis()))
-				.expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 10)).and().signWith(getSignKey())
-				.compact();
+				.expiration(new Date(System.currentTimeMillis() + (60L * 24 * 60 * 60 * 1000))).and()
+				.signWith(getSignKey()).compact();
 	}
 
 	// 2. Creates a signing key from the base64 encoded secret.
@@ -87,6 +87,7 @@ public class JwtService {
 
 	public String getTokenFromRequest(HttpServletRequest request) {
 		// TODO Auto-generated method stub
+//		System.err.println("request.getHeader(\"Authorization\")" + " " + request.getHeader("Authorization"));
 		if (request.getHeader("Authorization") != null)
 			return request.getHeader("Authorization");
 

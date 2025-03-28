@@ -29,11 +29,16 @@ public class SecurityConfig {
 	@Autowired
 	private JwtFilter jwtFilter;
 
+//	@Autowired
+//	private WebConfig webConfig;
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(csrf -> csrf.disable());
-		http.authorizeHttpRequests(auth -> auth.requestMatchers("/user/register", "/user/login").permitAll()
-				.requestMatchers("/user/get-all-user-details").hasAuthority("ADMIN")
+//		http.cors(c -> c);
+		http.authorizeHttpRequests(auth -> auth
+				.requestMatchers("/user/register", "/user/login", "/user/forgot-password", "/user/reset-password/**")
+				.permitAll().requestMatchers("/user/get-all-user-details").hasAuthority("ADMIN")
 				.requestMatchers("/flight/add-flight-details", "/flight/update-flight-details",
 						"/flight/delete-flight-details/**", "/flight/get-all-flights-details",
 						"/flight/get-flights-details-by-flight-number/**")
