@@ -1,10 +1,12 @@
 package com.flight.management.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +29,17 @@ public class FlightController {
 	private FlightService service;
 
 	@PostMapping("/add-flight-details")
-	public ResponseEntity<?> addFlightDetails(@Valid @RequestBody FlightProxy flightProxy) {
+	public ResponseEntity<?> addFlightDetails(@Valid @RequestBody FlightProxy flightProxy,
+			BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			// Extract error messages
+			List<String> errors = bindingResult.getFieldErrors().stream().map(error -> error.getDefaultMessage())
+					.collect(Collectors.toList());
+
+			return new ResponseEntity<>(new Response(errors.toString(), HttpStatus.BAD_REQUEST.toString()),
+					HttpStatus.BAD_REQUEST);
+		}
+
 		return new ResponseEntity<>(new Response(service.addFlightDetails(flightProxy), HttpStatus.CREATED.toString()),
 				HttpStatus.CREATED);
 	}
@@ -60,7 +72,18 @@ public class FlightController {
 	}
 
 	@PostMapping("/update-flight-details")
-	public ResponseEntity<?> updateFlightDetails(@Valid @RequestBody FlightProxy flightProxy) {
+	public ResponseEntity<?> updateFlightDetails(@Valid @RequestBody FlightProxy flightProxy,
+			BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			// Extract error messages
+			List<String> errors = bindingResult.getFieldErrors().stream().map(error -> error.getDefaultMessage())
+					.collect(Collectors.toList());
+
+			return new ResponseEntity<>(new Response(errors.toString(), HttpStatus.BAD_REQUEST.toString()),
+					HttpStatus.BAD_REQUEST);
+		}
+
 		String s = service.updateFlightDetails(flightProxy);
 
 		if (s != null && !s.isEmpty())

@@ -1,10 +1,12 @@
 package com.flight.management.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,25 +24,36 @@ import com.flight.management.service.UserService;
 
 import jakarta.validation.Valid;
 
+//@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/user")
-//@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
 	@Autowired
 	private UserService service;
 
 	@PostMapping("/register")
-	public ResponseEntity<?> saveUserDetails(@Valid @RequestBody UserProxy userProxy) {
-		String s = service.saveUserDetails(userProxy);
+	public ResponseEntity<?> saveUserDetails(@Valid @RequestBody UserProxy userProxy, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			// Extract error messages
+			List<String> errors = bindingResult.getFieldErrors().stream().map(error -> error.getDefaultMessage())
+					.collect(Collectors.toList());
 
-		if (s.equals("User already exist with given username.") || s.equals("User already exist with given email-id."))
-			return new ResponseEntity<>(new Response(s, HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(new Response(errors.toString(), HttpStatus.BAD_REQUEST.toString()),
+					HttpStatus.BAD_REQUEST);
+		}
 
-		return new ResponseEntity<>(new Response(s, HttpStatus.CREATED.toString()), HttpStatus.CREATED);
+		String result = service.saveUserDetails(userProxy);
+		if (result.contains("User already exist")) {
+			return new ResponseEntity<>(new Response(result, HttpStatus.BAD_REQUEST.toString()),
+					HttpStatus.BAD_REQUEST);
+		}
+
+		return new ResponseEntity<>(new Response(result, HttpStatus.CREATED.toString()), HttpStatus.CREATED);
 	}
 
 	@GetMapping("/get-all-user-details")
 	public ResponseEntity<?> getAllUsersDetails() {
+		System.err.println("Control is here.");
 		List<UserProxy> list = service.getAllUsersDetails();
 
 		if (list != null && !list.isEmpty())
@@ -66,7 +79,17 @@ public class UserController {
 	}
 
 	@PostMapping("/update-user-by-username")
-	public ResponseEntity<?> updateUserByUsername(@Valid @RequestBody UserProxy userProxy) {
+	public ResponseEntity<?> updateUserByUsername(@Valid @RequestBody UserProxy userProxy,
+			BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			// Extract error messages
+			List<String> errors = bindingResult.getFieldErrors().stream().map(error -> error.getDefaultMessage())
+					.collect(Collectors.toList());
+
+			return new ResponseEntity<>(new Response(errors.toString(), HttpStatus.BAD_REQUEST.toString()),
+					HttpStatus.BAD_REQUEST);
+		}
+
 		String s = service.updateUserByUsername(userProxy);
 
 		if (s != null && !s.isEmpty())
@@ -83,7 +106,7 @@ public class UserController {
 		String s = service.deleteUserByUsername(username);
 
 		if (s != null && !s.isEmpty())
-			return new ResponseEntity<>(s, HttpStatus.OK);
+			return new ResponseEntity<>(new Response(s, HttpStatus.OK.toString()), HttpStatus.OK);
 
 		else
 			return new ResponseEntity<>(new Response("User not found with given username, please verify the username!!",
@@ -92,14 +115,13 @@ public class UserController {
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginReq req) {
-		LoginResp res = service.login(req);
-
-		if (res != null)
+		try {
+			LoginResp res = service.login(req);
 			return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
-
-		return new ResponseEntity<>(new Response(
-				"User not valid with given username and password, please verify the username and password!!",
-				HttpStatus.UNAUTHORIZED.toString()), HttpStatus.UNAUTHORIZED);
+		} catch (RuntimeException e) {
+			return new ResponseEntity<>(new Response(e.getMessage(), HttpStatus.UNAUTHORIZED.toString()),
+					HttpStatus.UNAUTHORIZED);
+		}
 	}
 
 	@PostMapping("/forgot-password")
