@@ -1,6 +1,7 @@
 package com.flight.management.filter;
 
 import java.io.IOException;
+import java.util.Enumeration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,6 +31,14 @@ public class JwtFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
+
+		// Log all header names for debugging
+//		Enumeration<String> headerNames = request.getHeaderNames();
+//		while (headerNames.hasMoreElements()) {
+//			String headerName = headerNames.nextElement();
+//			System.out.println("Header: " + headerName + " = " + request.getHeader(headerName));
+//		}
+
 		String token = jwtService.getTokenFromRequest(request);
 		System.err.println(token);
 

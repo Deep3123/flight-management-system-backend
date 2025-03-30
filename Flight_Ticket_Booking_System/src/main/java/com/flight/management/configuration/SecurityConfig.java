@@ -1,5 +1,7 @@
 package com.flight.management.configuration;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,22 +36,27 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.csrf(csrf -> csrf.disable());
-//		http.cors(c -> c);
-		// http.cors(c->c);
-		http.authorizeHttpRequests(auth -> auth.requestMatchers("/user/register", "/user/login").permitAll()
-				.requestMatchers("/user/get-all-user-details").hasAuthority("ADMIN")
-				.requestMatchers("/flight/add-flight-details", "/flight/update-flight-details",
-						"/flight/delete-flight-details/**", "/flight/get-all-flights-details",
-						"/flight/get-flights-details-by-flight-number/**")
-				.hasAuthority("ADMIN")
-				.requestMatchers("/contact/get-all-contact-us-details",
-						"/contact/get-all-contact-us-details-by-name/**")
-				.hasAuthority("ADMIN").anyRequest().authenticated());
-		http.formLogin(Customizer.withDefaults());
-		http.httpBasic(Customizer.withDefaults());
-		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-		http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		System.err.println("Control is in security chain filter.");
+
+		http.csrf(csrf -> csrf.disable()).cors(cors -> cors.configurationSource(request -> {
+			var corsConfig = new org.springframework.web.cors.CorsConfiguration();
+			corsConfig.setAllowedOrigins(List.of("http://localhost:4200")); // Update with frontend URL
+			corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+			corsConfig.setAllowedHeaders(List.of("*"));
+			return corsConfig;
+		})).authorizeHttpRequests(auth -> auth
+				.requestMatchers("/user/register", "/user/login", "/user/forgot-password", "/user/reset-password/**")
+				.permitAll()
+				.requestMatchers("/user/get-all-user-details", "/flight/add-flight-details",
+						"/flight/update-flight-details", "/flight/delete-flight-details/**",
+						"/flight/get-all-flights-details", "/flight/get-flights-details-by-flight-number/**",
+						"/contact/get-all-contact-us-details", "/contact/get-all-contact-us-details-by-name/**")
+				.hasAuthority("ADMIN").anyRequest().authenticated())
+//				.formLogin(Customizer.withDefaults())
+//				.httpBasic(Customizer.withDefaults())
+				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
 		return http.build();
 	}
 
