@@ -40,8 +40,13 @@ public class FlightController {
 					HttpStatus.BAD_REQUEST);
 		}
 
-		return new ResponseEntity<>(new Response(service.addFlightDetails(flightProxy), HttpStatus.CREATED.toString()),
-				HttpStatus.CREATED);
+		String result = service.addFlightDetails(flightProxy);
+		if (result.contains("Flight already exist with given flight number.")) {
+			return new ResponseEntity<>(new Response(result, HttpStatus.BAD_REQUEST.toString()),
+					HttpStatus.BAD_REQUEST);
+		}
+
+		return new ResponseEntity<>(new Response(result, HttpStatus.CREATED.toString()), HttpStatus.CREATED);
 	}
 
 	@GetMapping("/get-all-flights-details")

@@ -43,7 +43,7 @@ public class FlightProxy {
 
 	@NotNull(message = "Price cannot be null.")
 	@DecimalMin(value = "0.01", message = "Price must be greater than 0.")
-	@DecimalMax(value = "10000.00", message = "Price must not exceed 10000.")
+	@DecimalMax(value = "100000.00", message = "Price must not exceed 10000.")
 	private Double price;
 
 	@NotNull(message = "Seats available cannot be null.")

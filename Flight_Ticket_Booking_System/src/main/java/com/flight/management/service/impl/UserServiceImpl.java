@@ -178,7 +178,7 @@ public class UserServiceImpl implements UserService {
 			mailMessage.setText("Reset your password for flight ticket booking system: " + url);
 
 			javaMailSender.send(mailMessage);
-
+			
 			return "An email has been sent with a link to reset your password. Please check your inbox and follow the instructions to reset your password.";
 		}
 		return "User with the provided email not found.";

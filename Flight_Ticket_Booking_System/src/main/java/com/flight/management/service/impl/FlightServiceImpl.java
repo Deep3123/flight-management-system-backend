@@ -23,8 +23,14 @@ public class FlightServiceImpl implements FlightService {
 	@Override
 	public String addFlightDetails(FlightProxy flightProxy) {
 		// TODO Auto-generated method stub
-		repo.save(MapperUtil.convertValue(flightProxy, FlightEntity.class));
-		return "Flight data saved successfully!!";
+		Optional<FlightEntity> flight = repo.findByFlightNumber(flightProxy.getFlightNumber());
+
+		if (flight.isEmpty() || flight.get() == null) {
+			repo.save(MapperUtil.convertValue(flightProxy, FlightEntity.class));
+			return "Flight data saved successfully!!";
+		}
+
+		return "Flight already exist with given flight number.";
 	}
 
 	@Override
