@@ -53,7 +53,7 @@ public class UserController {
 
 	@GetMapping("/get-all-user-details")
 	public ResponseEntity<?> getAllUsersDetails() {
-		System.err.println("Control is here.");
+//		System.err.println("Control is here.");
 		List<UserProxy> list = service.getAllUsersDetails();
 
 		if (list != null && !list.isEmpty())
@@ -117,6 +117,8 @@ public class UserController {
 	public ResponseEntity<?> login(@RequestBody LoginReq req) {
 		try {
 			LoginResp res = service.login(req);
+//			System.err.println(req.getUsername());
+//			System.err.println(req.getPassword());
 			return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
 		} catch (RuntimeException e) {
 			return new ResponseEntity<>(new Response(e.getMessage(), HttpStatus.UNAUTHORIZED.toString()),
