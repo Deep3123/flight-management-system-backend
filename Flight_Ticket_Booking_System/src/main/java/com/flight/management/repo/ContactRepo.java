@@ -9,4 +9,6 @@ import com.flight.management.domain.ContactEntity;
 
 public interface ContactRepo extends JpaRepository<ContactEntity, Long> {
 	Optional<List<ContactEntity>> findByName(String name);
+
+	Optional<ContactEntity> findByNameAndMessage(String name, String message);
 }

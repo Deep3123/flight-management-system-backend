@@ -130,8 +130,8 @@ public class UserController {
 	public ResponseEntity<?> forgotPassword(@RequestBody String email) {
 		String s = service.forgotPassword(email);
 
-		if (s.equals(
-				"An email has been sent with a link to reset your password. Please check your inbox and follow the instructions to reset your password."))
+		if (s.equals("A password reset link has been sent to your registered email address. "
+				+ "Please check your inbox and follow the instructions to reset your password."))
 			return new ResponseEntity<>(new Response(s, HttpStatus.OK.toString()), HttpStatus.OK);
 
 		return new ResponseEntity<>(new Response(s, HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);

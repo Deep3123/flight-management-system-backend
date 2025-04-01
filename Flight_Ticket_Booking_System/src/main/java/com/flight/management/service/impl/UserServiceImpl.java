@@ -175,11 +175,17 @@ public class UserServiceImpl implements UserService {
 			mailMessage.setFrom(sender);
 			mailMessage.setTo(email);
 			mailMessage.setSubject("Password Reset Request");
-			mailMessage.setText("Reset your password for flight ticket booking system: " + url);
+			mailMessage.setText("Dear " + user.get().getUsername() + ",\n\n"
+					+ "We received a request to reset your password for the Flight Ticket Booking System. "
+					+ "You can reset your password by clicking the link below:\n\n" + url + "\n\n"
+					+ "If you did not request a password reset, please ignore this email. "
+					+ "For security reasons, this link will expire after a certain period.\n\n" + "Best regards,\n"
+					+ "The Support Team");
 
 			javaMailSender.send(mailMessage);
-			
-			return "An email has been sent with a link to reset your password. Please check your inbox and follow the instructions to reset your password.";
+
+			return "A password reset link has been sent to your registered email address. "
+					+ "Please check your inbox and follow the instructions to reset your password.";
 		}
 		return "User with the provided email not found.";
 	}

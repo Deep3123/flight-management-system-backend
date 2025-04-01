@@ -1,10 +1,12 @@
 package com.flight.management.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,16 +28,24 @@ public class ContactController {
 	private ContactService service;
 
 	@PostMapping("/save-contact-us-details")
-	public ResponseEntity<?> saveContactUsDetails(@Valid @RequestBody ContactProxy contactProxy) {
+	public ResponseEntity<?> saveContactUsDetails(@Valid @RequestBody ContactProxy contactProxy,
+			BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			// Extract error messages
+			List<String> errors = bindingResult.getFieldErrors().stream().map(error -> error.getDefaultMessage())
+					.collect(Collectors.toList());
+
+			return new ResponseEntity<>(new Response(errors.toString(), HttpStatus.BAD_REQUEST.toString()),
+					HttpStatus.BAD_REQUEST);
+		}
+
 		String s = service.saveContactUsDetails(contactProxy);
 
-		if (s.equals(
-				"Thank you for contacting us! We have received your query and our team will get back to you shortly."))
+		if (s.equals("Thank you for reaching out! We have received your query and will get back to you soon. "
+				+ "A confirmation email has been sent to your registered email address."))
 			return new ResponseEntity<>(new Response(s, HttpStatus.CREATED.toString()), HttpStatus.CREATED);
 
-		return new ResponseEntity<>(
-				new Response("Some error generated while saving data!!!", HttpStatus.PROCESSING.toString()),
-				HttpStatus.PROCESSING);
+		return new ResponseEntity<>(new Response(s, HttpStatus.PROCESSING.toString()), HttpStatus.PROCESSING);
 	}
 
 	@GetMapping("/get-all-contact-us-details")
