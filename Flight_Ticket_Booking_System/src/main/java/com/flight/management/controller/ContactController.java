@@ -29,7 +29,8 @@ public class ContactController {
 	public ResponseEntity<?> saveContactUsDetails(@Valid @RequestBody ContactProxy contactProxy) {
 		String s = service.saveContactUsDetails(contactProxy);
 
-		if (s.equals("We got your query, we will reach out you soon!!!"))
+		if (s.equals(
+				"Thank you for contacting us! We have received your query and our team will get back to you shortly."))
 			return new ResponseEntity<>(new Response(s, HttpStatus.CREATED.toString()), HttpStatus.CREATED);
 
 		return new ResponseEntity<>(

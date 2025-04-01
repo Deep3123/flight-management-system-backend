@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContactProxy {
-	@NotNull(message = "Id cannot be null.")
 	private Long id;
 
 	@NotBlank(message = "Name cannot be empty.")
