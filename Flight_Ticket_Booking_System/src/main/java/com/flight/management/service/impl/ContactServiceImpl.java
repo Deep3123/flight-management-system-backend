@@ -29,21 +29,33 @@ public class ContactServiceImpl implements ContactService {
 	@Override
 	public String saveContactUsDetails(ContactProxy contactProxy) {
 		// TODO Auto-generated method stub
-		SimpleMailMessage mailMessage = new SimpleMailMessage();
-		mailMessage.setFrom(sender); // Assuming `sender` is a variable containing the email address of the sender
-		mailMessage.setTo(contactProxy.getEmail());
-		mailMessage.setSubject("We Received Your Query");
-		mailMessage.setText(
-				"Thank you for reaching out! We have received your query regarding the flight ticket booking system. "
-						+ "Our team will get back to you as soon as possible.");
-		// Send the email
-		javaMailSender.send(mailMessage);
+		Optional<ContactEntity> details = repo.findByNameAndMessage(contactProxy.getName(), contactProxy.getMessage());
 
-		// Save the contact details to the repository
-		repo.save(MapperUtil.convertValue(contactProxy, ContactEntity.class));
+		if (details.isEmpty()) {
+			SimpleMailMessage mailMessage = new SimpleMailMessage();
+			mailMessage.setFrom(sender); // Assuming `sender` is a variable containing the email address of the sender
+			mailMessage.setTo(contactProxy.getEmail());
+			mailMessage.setSubject("We Received Your Query");
+			mailMessage.setText("Dear " + contactProxy.getName() + ",\n\n"
+					+ "Thank you for reaching out to us regarding the Flight Ticket Booking System. "
+					+ "We have received your query and our team is currently reviewing it. "
+					+ "We appreciate your patience and will get back to you as soon as possible.\n\n"
+					+ "If you need any further assistance in the meantime, feel free to contact our support team.\n\n"
+					+ "Best regards,\n" + "The Support Team");
 
-		// Return success message
-		return "Thank you for contacting us! We have received your query and our team will get back to you shortly.";
+			// Send the email
+			javaMailSender.send(mailMessage);
+
+			// Save the contact details to the repository
+			repo.save(MapperUtil.convertValue(contactProxy, ContactEntity.class));	
+
+			// Return success message
+			return "Thank you for reaching out! We have received your query and will get back to you soon. "
+					+ "A confirmation email has been sent to your registered email address.";
+		}
+
+		return "We have already received your query. Our team is reviewing it, and we will respond to you shortly. "
+				+ "Thank you for your patience!";
 	}
 
 	@Override
@@ -75,9 +87,9 @@ public class ContactServiceImpl implements ContactService {
 //		return null;
 //	}
 
-//	@Override
-//	public String deleteContactUsDetails() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+	@Override
+	public String deleteContactUsDetails(String name, String message) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

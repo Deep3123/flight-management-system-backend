@@ -13,5 +13,5 @@ public interface ContactService {
 
 //	public String updateContactUsDetails(ContactProxy contactProxy);
 
-//	public String deleteContactUsDetails(String name);
+	public String deleteContactUsDetails(String name, String message);
 }
