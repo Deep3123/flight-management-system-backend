@@ -2,6 +2,8 @@ package com.flight.management.domain;
 
 import java.util.Date;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,11 +30,12 @@ public class ContactEntity {
 
 	private String email;
 
-	private String message;
-
 	private String phoneNumber;
 
+	private String message;
+
 	@Temporal(TemporalType.TIMESTAMP)
+	@CreationTimestamp
 	private Date submittedAt;
 
 }
