@@ -176,7 +176,7 @@ public class UserServiceImpl implements UserService {
 			mailMessage.setTo(email);
 			mailMessage.setSubject("Password Reset Request");
 			mailMessage.setText("Dear " + user.get().getUsername() + ",\n\n"
-					+ "We received a request to reset your password for the Flight Ticket Booking System. "
+					+ "We received a request to reset your password for the JetWayz."
 					+ "You can reset your password by clicking the link below:\n\n" + url + "\n\n"
 					+ "If you did not request a password reset, please ignore this email. "
 					+ "For security reasons, this link will expire after a certain period.\n\n" + "Best regards,\n"
