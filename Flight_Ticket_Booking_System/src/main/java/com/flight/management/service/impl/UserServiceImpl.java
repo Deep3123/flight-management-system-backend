@@ -208,7 +208,7 @@ public class UserServiceImpl implements UserService {
 		Optional<UserEntity> user = repo.findByUsername(tokenUsername);
 
 		if (user.isPresent()) {
-			if (generator.validateTo	ken(time, decodedToken, user.get())) {
+			if (generator.validateToken(time, decodedToken, user.get())) {
 				user.get().setPassword(encoder.encode(proxy.getPassword()));
 				repo.save(user.get());
 				return "Password was updated successfully.";
