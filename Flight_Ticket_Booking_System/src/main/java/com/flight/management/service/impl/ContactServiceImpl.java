@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.flight.management.domain.ContactEntity;
 import com.flight.management.proxy.ContactProxy;
+import com.flight.management.proxy.ContactUs;
 import com.flight.management.repo.ContactRepo;
 import com.flight.management.service.ContactService;
 import com.flight.management.util.MapperUtil;
@@ -37,7 +38,7 @@ public class ContactServiceImpl implements ContactService {
 			mailMessage.setTo(contactProxy.getEmail());
 			mailMessage.setSubject("We Received Your Query");
 			mailMessage.setText("Dear " + contactProxy.getName() + ",\n\n"
-					+ "Thank you for reaching out to us regarding the Flight Ticket Booking System. "
+					+ "Thank you for reaching out to us regarding the JetWayz."
 					+ "We have received your query and our team is currently reviewing it. "
 					+ "We appreciate your patience and will get back to you as soon as possible.\n\n"
 					+ "If you need any further assistance in the meantime, feel free to contact our support team.\n\n"
@@ -47,7 +48,7 @@ public class ContactServiceImpl implements ContactService {
 			javaMailSender.send(mailMessage);
 
 			// Save the contact details to the repository
-			repo.save(MapperUtil.convertValue(contactProxy, ContactEntity.class));	
+			repo.save(MapperUtil.convertValue(contactProxy, ContactEntity.class));
 
 			// Return success message
 			return "Thank you for reaching out! We have received your query and will get back to you soon. "
@@ -88,8 +89,14 @@ public class ContactServiceImpl implements ContactService {
 //	}
 
 	@Override
-	public String deleteContactUsDetails(String name, String message) {
+	public String deleteContactUsDetails(ContactUs contact) {
 		// TODO Auto-generated method stub
-		return null;
+		Optional<ContactEntity> detail = repo.findByNameAndMessage(contact.getName(), contact.getMessage());
+
+		if (detail.isPresent()) {
+			repo.delete(detail.get());
+			return "Data successfully deleted.";
+		}
+		return "Data not found with given name and message.";
 	}
 }
