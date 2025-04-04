@@ -102,9 +102,9 @@ public class UserServiceImpl implements UserService {
 			if (userProxy.getMobileNo() != null)
 				user.get().setMobileNo(userProxy.getMobileNo());
 
-			if (userProxy.getPassword() != null)
-				user.get().setPassword(encoder.encode(userProxy.getPassword()));
-//				user.get().setPassword(userProxy.getPassword());
+//			if (userProxy.getPassword() != null)
+//				user.get().setPassword(encoder.encode(userProxy.getPassword()));
+////				user.get().setPassword(userProxy.getPassword());
 
 			repo.save(user.get());
 
@@ -228,5 +228,19 @@ public class UserServiceImpl implements UserService {
 		} catch (IllegalArgumentException e) {
 			throw new RuntimeException("Invalid token format.", e);
 		}
+	}
+
+	@Override
+	public String checkAccountExists(String token) {
+		// TODO Auto-generated method stub
+		String userName = jwtService.extractUserName(token);
+//		System.err.println(userName);
+
+		Optional<UserEntity> user = repo.findByUsername(userName);
+
+		if (user.isEmpty()) {
+			return "We couldn't log you in. Your account may have been deleted, or you might not be logged in. Please try again. If the issue persists, consider creating a new account.";
+		}
+		return "Success.";
 	}
 }
