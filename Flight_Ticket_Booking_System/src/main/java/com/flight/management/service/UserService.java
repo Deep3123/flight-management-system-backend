@@ -24,4 +24,5 @@ public interface UserService {
 
 	public String resetPassword(String username, String timestamp, String token, ResetPassword proxy);
 
+	public String checkAccountExists(String token);
 }
