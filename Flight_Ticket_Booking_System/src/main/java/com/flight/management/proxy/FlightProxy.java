@@ -28,10 +28,16 @@ public class FlightProxy {
 	@NotNull(message = "Departure date cannot be null.")
 	@FutureOrPresent(message = "Departure date must be today or in the future.")
 	private Date departureDate;
+	
+	@NotBlank(message = "Departure time cannot be null or empty.")
+	private String departureTime;
 
 	@NotNull(message = "Arrival date cannot be null.")
 	@FutureOrPresent(message = "Arrival date must be today or in the future.")
 	private Date arrivalDate;
+	
+	@NotBlank(message = "Arrival time cannot be null or empty.")
+	private String arrivalTime;
 
 	@NotBlank(message = "Departure airport cannot be null or empty.")
 	@Pattern(regexp = "^[A-Za-z0-9\\s-]+$", message = "Departure airport can only contain letters, numbers, spaces, and hyphens.")

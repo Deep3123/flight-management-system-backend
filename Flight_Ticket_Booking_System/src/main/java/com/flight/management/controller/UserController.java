@@ -126,7 +126,7 @@ public class UserController {
 	}
 
 	@PostMapping("/forgot-password")
-	public ResponseEntity<?> forgotPassword(@RequestBody String email) {
+	public ResponseEntity<?> forgotPassword(@Valid @RequestBody String email) {
 		String s = service.forgotPassword(email);
 
 		if (s.equals("A password reset link has been sent to your registered email address. "
@@ -137,7 +137,7 @@ public class UserController {
 	}
 
 	@PostMapping("/reset-password/{username}/{timestamp}/{token}")
-	public ResponseEntity<?> resetPassword(@PathVariable("username") String username,
+	public ResponseEntity<?> resetPassword(@Valid @PathVariable("username") String username,
 			@PathVariable("timestamp") String timestamp, @PathVariable("token") String token,
 			@RequestBody ResetPassword proxy) {
 		try {
@@ -159,7 +159,7 @@ public class UserController {
 	}
 
 	@PostMapping("/check-account-exists")
-	public ResponseEntity<?> checkAccountExists(@RequestBody String token) {
+	public ResponseEntity<?> checkAccountExists(@Valid @RequestBody String token) {
 		String s = service.checkAccountExists(token);
 
 		if (s.equals("Success."))
