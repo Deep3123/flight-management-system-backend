@@ -8,6 +8,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,9 +26,15 @@ public class FlightEntity {
 
 	private String flightNumber;
 
+	@Temporal(TemporalType.DATE)
 	private Date departureDate;
 
+	private String departureTime;
+
+	@Temporal(TemporalType.DATE)
 	private Date arrivalDate;
+
+	private String arrivalTime;
 
 	private String departureAirport;
 

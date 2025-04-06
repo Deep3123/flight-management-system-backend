@@ -115,8 +115,18 @@ public class FlightController {
 					HttpStatus.NOT_FOUND);
 	}
 
-	@GetMapping("/get-flight-details-by-departure-and-arrival")
-	public ResponseEntity<?> getFlightDetailsByUserDetails(@Valid @RequestBody FlightSearchProxy flightSearchProxy) {
+	@PostMapping("/get-flight-details-by-departure-and-arrival")
+	public ResponseEntity<?> getFlightDetailsByUserDetails(@Valid @RequestBody FlightSearchProxy flightSearchProxy,
+			BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			// Extract error messages
+			List<String> errors = bindingResult.getFieldErrors().stream().map(error -> error.getDefaultMessage())
+					.collect(Collectors.toList());
+
+			return new ResponseEntity<>(new Response(errors.toString(), HttpStatus.BAD_REQUEST.toString()),
+					HttpStatus.BAD_REQUEST);
+		}
+
 		List<FlightProxy> list = service.getFlightDetailsByUserDetails(flightSearchProxy);
 
 		if (list != null && !list.isEmpty())
