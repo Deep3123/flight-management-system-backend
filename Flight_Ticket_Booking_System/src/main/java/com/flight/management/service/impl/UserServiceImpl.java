@@ -148,7 +148,7 @@ public class UserServiceImpl implements UserService {
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(
-					"User not valid with given username and password, please verify the username and password!!");
+					"The username or password you entered is incorrect. Please verify your credentials and try again.");
 		}
 		return null;
 	}
