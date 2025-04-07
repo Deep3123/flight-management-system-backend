@@ -59,8 +59,14 @@ public class FlightServiceImpl implements FlightService {
 			if (flightProxy.getDepartureDate() != null)
 				flight.get().setDepartureDate(flightProxy.getDepartureDate());
 
+			if (flightProxy.getDepartureTime() != null)
+				flight.get().setDepartureTime(flightProxy.getDepartureTime());
+
 			if (flightProxy.getArrivalDate() != null)
 				flight.get().setArrivalDate(flightProxy.getArrivalDate());
+
+			if (flightProxy.getArrivalTime() != null)
+				flight.get().setArrivalTime(flightProxy.getArrivalTime());
 
 			if (flightProxy.getDepartureAirport() != null)
 				flight.get().setDepartureAirport(flightProxy.getDepartureAirport());
