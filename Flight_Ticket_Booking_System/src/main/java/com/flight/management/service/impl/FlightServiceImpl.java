@@ -83,8 +83,8 @@ public class FlightServiceImpl implements FlightService {
 			if (flightProxy.getDurationMinutes() != null)
 				flight.get().setDurationMinutes(flightProxy.getDurationMinutes());
 
-			if (flightProxy.getAirlineName() != null)
-				flight.get().setAirlineName(flightProxy.getAirlineName());
+//			if (flightProxy.getAirlineName() != null)
+//				flight.get().setAirlineName(flightProxy.getAirlineName());
 
 			// Save the updated flight
 			repo.save(flight.get());

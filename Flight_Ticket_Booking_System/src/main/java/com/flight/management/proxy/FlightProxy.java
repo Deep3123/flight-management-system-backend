@@ -28,14 +28,14 @@ public class FlightProxy {
 	@NotNull(message = "Departure date cannot be null.")
 	@FutureOrPresent(message = "Departure date must be today or in the future.")
 	private Date departureDate;
-	
+
 	@NotBlank(message = "Departure time cannot be null or empty.")
 	private String departureTime;
 
 	@NotNull(message = "Arrival date cannot be null.")
 	@FutureOrPresent(message = "Arrival date must be today or in the future.")
 	private Date arrivalDate;
-	
+
 	@NotBlank(message = "Arrival time cannot be null or empty.")
 	private String arrivalTime;
 
@@ -60,9 +60,9 @@ public class FlightProxy {
 	@Range(min = 30, max = 1440, message = "Duration must be between 30 minutes and 24 hours (1440 minutes).")
 	private Integer durationMinutes;
 
-	@NotBlank(message = "Airline name cannot be null or empty.")
-	@Pattern(regexp = "^[A-Za-z\\s-]+$", message = "Airline name can only contain letters, spaces, and hyphens.")
-	private String airlineName;
+//	@NotBlank(message = "Airline name cannot be null or empty.")
+//	@Pattern(regexp = "^[A-Za-z\\s-]+$", message = "Airline name can only contain letters, spaces, and hyphens.")
+//	private String airlineName;
 
 	@NotBlank(message = "Flight class cannot be null or empty.")
 	@Pattern(regexp = "^[A-Za-z\\s-]+$", message = "Flight class can only contain letters, spaces, and hyphens.")
