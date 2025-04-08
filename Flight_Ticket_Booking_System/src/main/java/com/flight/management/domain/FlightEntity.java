@@ -46,7 +46,7 @@ public class FlightEntity {
 
 	private Integer durationMinutes;
 
-	private String airlineName;
+//	private String airlineName;
 
 	private String flightClass;
 
