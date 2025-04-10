@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PassengerProxy {
+	private Long id;
 
 	@NotBlank(message = "First name is required.")
 	private String firstName;
