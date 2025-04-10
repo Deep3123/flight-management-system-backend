@@ -47,7 +47,7 @@ public class BookingServiceImpl implements BookingService {
 	public boolean verifyPayment(String paymentId) throws Exception {
 		RazorpayClient razorpay = new RazorpayClient(razorpayKey, razorpaySecret);
 		Payment payment = razorpay.payments.fetch(paymentId);
-		return "captured".equals(payment.get("status"));
+		return "authorized".equals(payment.get("status"));
 	}
 
 	@Override
@@ -55,14 +55,15 @@ public class BookingServiceImpl implements BookingService {
 		// TODO Auto-generated method stub
 		try {
 			// 1. Verify payment with Razorpay (optional step if you use webhook too)
-//			RazorpayClient razorpay = new RazorpayClient(razorpayKey, razorpaySecret);
-//			Payment payment = razorpay.payments.fetch(request.getPaymentId());
-//
+			RazorpayClient razorpay = new RazorpayClient(razorpayKey, razorpaySecret);
+			Payment payment = razorpay.payments.fetch(request.getPaymentId());
+//			System.out.println("Payment status: " + payment.get("status"));
+
 //			System.err.println(request);
-//
-//			if (!"captured".equals(payment.get("status"))) {
-//				throw new Exception("Payment not successful");
-//			}
+
+			if (!"authorized".equals(payment.get("status"))) {
+				throw new Exception("Payment not successful");
+			}
 
 			// 2. Save to DB
 //			BookingEntity booking = new BookingEntity();
@@ -83,6 +84,7 @@ public class BookingServiceImpl implements BookingService {
 			bookingRepo.save(MapperUtil.convertValue(request, BookingEntity.class));
 		} catch (Exception e) {
 			// TODO: handle exception
+			e.printStackTrace(); // Add this line
 			throw new RuntimeException("Razorpay Connection may not be established!!!");
 		}
 
