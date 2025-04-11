@@ -17,6 +17,7 @@ import com.flight.management.repo.FlightRepo;
 import com.flight.management.service.BookingService;
 import com.flight.management.util.MapperUtil;
 import com.flight.management.util.PDFGenerator;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 import com.razorpay.Payment;
 import com.razorpay.RazorpayClient;
 
@@ -55,15 +56,15 @@ public class BookingServiceImpl implements BookingService {
 		// TODO Auto-generated method stub
 		try {
 			// 1. Verify payment with Razorpay (optional step if you use webhook too)
-			RazorpayClient razorpay = new RazorpayClient(razorpayKey, razorpaySecret);
-			Payment payment = razorpay.payments.fetch(request.getPaymentId());
-//			System.out.println("Payment status: " + payment.get("status"));
-
-//			System.err.println(request);
-
-			if (!"authorized".equals(payment.get("status"))) {
-				throw new Exception("Payment not successful");
-			}
+//			RazorpayClient razorpay = new RazorpayClient(razorpayKey, razorpaySecret);
+//			Payment payment = razorpay.payments.fetch(request.getPaymentId());
+////			System.out.println("Payment status: " + payment.get("status"));
+//
+////			System.err.println(request);
+//
+//			if (!"authorized".equals(payment.get("status"))) {
+//				throw new Exception("Payment not successful");
+//			}
 
 			// 2. Save to DB
 //			BookingEntity booking = new BookingEntity();
@@ -90,29 +91,69 @@ public class BookingServiceImpl implements BookingService {
 
 	}
 
+//	@Override
+//	public void generateTicket(TicketProxy ticketProxy) {
+//		// TODO Auto-generated method stub
+//		try {
+//			// 3. Generate PDF
+//			byte[] pdfBytes = PDFGenerator.generateTicketPDF(ticketProxy);
+//
+//			// 4. Send Email
+////			        EmailUtil.sendTicketEmail(mailSender, request.getPassengerList().get(0).getEmail(), pdfBytes);
+//			MimeMessage message = mailSender.createMimeMessage();
+//			MimeMessageHelper helper = new MimeMessageHelper(message, true);
+//			helper.setFrom(sender);
+//			helper.setTo(ticketProxy.getPassengers().get(0).getEmail());
+//			helper.setSubject("Your JetWayz Flight Ticket");
+//			helper.setText(
+//					"Thank you for choosing JetWayz! Your flight ticket is attached to this email. We wish you a pleasant journey.",
+//					true);
+//
+//			ByteArrayDataSource dataSource = new ByteArrayDataSource(pdfBytes, "application/pdf");
+//			helper.addAttachment("ticket.pdf", dataSource);
+//			mailSender.send(message);
+//		} catch (Exception e) {
+//			// TODO: handle exception
+//		}
+//	}
+
 	@Override
 	public void generateTicket(TicketProxy ticketProxy) {
-		// TODO Auto-generated method stub
 		try {
-			// 3. Generate PDF
+			// 3. Generate PDF ticket
 			byte[] pdfBytes = PDFGenerator.generateTicketPDF(ticketProxy);
 
-			// 4. Send Email
-//			        EmailUtil.sendTicketEmail(mailSender, request.getPassengerList().get(0).getEmail(), pdfBytes);
+			// 4. Create the email with HTML content
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
-			helper.setFrom(sender);
-			helper.setTo(ticketProxy.getPassengers().get(0).getEmail());
-			helper.setSubject("Your JetWayz Flight Ticket");
-			helper.setText(
-					"Thank you for choosing JetWayz! Your flight ticket is attached to this email. We wish you a pleasant journey.",
-					true);
 
+			// Set email properties
+			helper.setFrom(sender); // Sender email address
+			helper.setTo(ticketProxy.getPassengers().get(0).getEmail()); // Recipient's email address
+			helper.setSubject("Your JetWayz Flight Ticket");
+
+			// HTML email content with inline styles
+			String htmlContent = "<div style=\"font-family: Arial, sans-serif; padding: 20px; background-color: #f5f5f5;\">"
+					+ "<h2 style=\"color: #333;\">Thank you for choosing JetWayz!</h2>"
+					+ "<p style=\"color: #555;\">We are pleased to confirm your flight reservation. Your flight ticket is attached to this email. We wish you a pleasant journey.</p>"
+					+ "<p style=\"color: #555;\">If you have any questions, feel free to contact our support team.</p>"
+					+ "<br>" + "<p style=\"color: #333;\">Best regards,<br><strong>The JetWayz Team</strong></p>"
+					+ "</div>";
+
+			// Set the email body and mark it as HTML
+			helper.setText(htmlContent, true);
+
+			// Attach the PDF ticket
 			ByteArrayDataSource dataSource = new ByteArrayDataSource(pdfBytes, "application/pdf");
 			helper.addAttachment("ticket.pdf", dataSource);
+
+			// Send the email
 			mailSender.send(message);
+
 		} catch (Exception e) {
-			// TODO: handle exception
+			// Handle exceptions (e.g., log them, rethrow, or return an error response)
+			e.printStackTrace();
+
 		}
 	}
 }

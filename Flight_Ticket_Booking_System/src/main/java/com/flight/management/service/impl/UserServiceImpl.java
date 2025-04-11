@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,6 +27,8 @@ import com.flight.management.repo.UserRepo;
 import com.flight.management.service.UserService;
 import com.flight.management.util.JwtService;
 import com.flight.management.util.MapperUtil;
+
+import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -171,18 +174,50 @@ public class UserServiceImpl implements UserService {
 			String url = "http://localhost:4200/reset-password/" + username + "/" + timestamp + "/" + encodedToken;
 			System.err.println(url);
 
-			SimpleMailMessage mailMessage = new SimpleMailMessage();
-			mailMessage.setFrom(sender);
-			mailMessage.setTo(email);
-			mailMessage.setSubject("Password Reset Request");
-			mailMessage.setText("Dear " + user.get().getUsername() + ",\n\n"
-					+ "We received a request to reset your password for the JetWayz. "
-					+ "You can reset your password by clicking the link below:\n\n" + url + "\n\n"
-					+ "If you did not request a password reset, please ignore this email. "
-					+ "For security reasons, this link will expire after a certain period.\n\n" + "Best regards,\n"
-					+ "The Support Team");
+//			SimpleMailMessage mailMessage = new SimpleMailMessage();
+//			mailMessage.setFrom(sender);
+//			mailMessage.setTo(email);
+//			mailMessage.setSubject("Password Reset Request");
+//			mailMessage.setText("Dear " + user.get().getUsername() + ",\n\n"
+//					+ "We received a request to reset your password for the JetWayz. "
+//					+ "You can reset your password by clicking the link below:\n\n" + url + "\n\n"
+//					+ "If you did not request a password reset, please ignore this email. "
+//					+ "For security reasons, this link will expire after a certain period.\n\n" + "Best regards,\n"
+//					+ "The Support Team");
+//
+//			javaMailSender.send(mailMessage);
 
-			javaMailSender.send(mailMessage);
+			try {
+
+				// Create the HTML content for the email
+				String htmlContent = "<div style=\"font-family: Arial, sans-serif; padding: 20px; background-color: #f5f5f5;\">"
+						+ "<h2 style=\"color: #333;\">JetWayz - Password Reset Request</h2>" + "<p>Dear "
+						+ user.get().getUsername() + ",</p>"
+						+ "<p>We received a request to reset your password for JetWayz. "
+						+ "You can reset your password by clicking the link below:</p>" + "<p><a href=\"" + url
+						+ "\" style=\"background-color: #007bff; color: #fff; padding: 10px 15px; text-decoration: none; border-radius: 5px;\">Reset Password</a></p>"
+						+ "<p>If you did not request a password reset, please ignore this email. "
+						+ "For security reasons, this link will expire after a certain period.</p>" + "<br>"
+						+ "<p>Best regards,<br><strong>The JetWayz Support Team</strong></p>" + "</div>";
+
+				// Create a MimeMessage
+				MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+
+				// Create a MimeMessageHelper
+				MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+				helper.setFrom(sender); // Sender's email address
+				helper.setTo(email); // Recipient's email address
+				helper.setSubject("Password Reset Request");
+				helper.setText(htmlContent, true); // Set the HTML content and mark it as HTML
+
+				// Send the email
+				javaMailSender.send(mimeMessage);
+			}
+
+			catch (Exception e) {
+				// TODO: handle exception
+				return "Error generated while email sending.";
+			}
 
 			return "A password reset link has been sent to your registered email address. "
 					+ "Please check your inbox and follow the instructions to reset your password.";
