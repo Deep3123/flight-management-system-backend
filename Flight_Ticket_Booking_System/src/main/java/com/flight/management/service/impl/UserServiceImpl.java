@@ -192,7 +192,7 @@ public class UserServiceImpl implements UserService {
 				// Create the HTML content for the email
 				String htmlContent = "<div style=\"font-family: Arial, sans-serif; padding: 20px; background-color: #f5f5f5;\">"
 						+ "<h2 style=\"color: #333;\">JetWayz - Password Reset Request</h2>" + "<p>Dear "
-						+ user.get().getUsername() + ",</p>"
+						+ user.get().getName() + ",</p>"
 						+ "<p>We received a request to reset your password for JetWayz. "
 						+ "You can reset your password by clicking the link below:</p>" + "<p><a href=\"" + url
 						+ "\" style=\"background-color: #007bff; color: #fff; padding: 10px 15px; text-decoration: none; border-radius: 5px;\">Reset Password</a></p>"

@@ -1,6 +1,8 @@
 package com.flight.management.service.impl;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.flight.management.domain.BookingEntity;
 import com.flight.management.domain.FlightEntity;
+import com.flight.management.domain.PassengerEntity;
+import com.flight.management.proxy.BookingDetails;
 import com.flight.management.proxy.BookingProxy;
 import com.flight.management.proxy.TicketProxy;
 import com.flight.management.repo.BookingRepo;
@@ -155,5 +159,42 @@ public class BookingServiceImpl implements BookingService {
 			e.printStackTrace();
 
 		}
+	}
+
+	@Override
+	public List<BookingDetails> getAllMergedBookings() {
+		// TODO Auto-generated method stub
+		List<BookingEntity> bookings = bookingRepo.findAll();
+		return bookings.stream().map(b -> {
+			BookingDetails dto = new BookingDetails();
+			dto.setId(b.getId());
+			dto.setPaymentId(b.getPaymentId());
+			dto.setFlightId(b.getFlightId());
+			dto.setAmount(b.getAmount());
+			dto.setCount(b.getCount());
+			dto.setBookingDate(b.getBookingDate());
+
+			PassengerEntity p = b.getPassenger();
+			dto.setFirstName(p.getFirstName());
+			dto.setLastName(p.getLastName());
+			dto.setAge(p.getAge());
+			dto.setEmail(p.getEmail());
+			dto.setCountryCode(p.getCountryCode());
+			dto.setMobile(p.getMobile());
+
+			return dto;
+		}).collect(Collectors.toList());
+	}
+
+	@Override
+	public String deleteBookingDetails(String paymentId) {
+		// TODO Auto-generated method stub
+		Optional<BookingEntity> booking = bookingRepo.findByPaymentId(paymentId);
+
+		if (booking.isPresent()) {
+			bookingRepo.delete(booking.get());
+			return "Booking details deleted successfully.";
+		}
+		return null;
 	}
 }
