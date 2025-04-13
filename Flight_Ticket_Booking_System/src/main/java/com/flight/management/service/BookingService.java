@@ -1,5 +1,8 @@
 package com.flight.management.service;
 
+import java.util.List;
+
+import com.flight.management.proxy.BookingDetails;
 import com.flight.management.proxy.BookingProxy;
 import com.flight.management.proxy.TicketProxy;
 
@@ -10,4 +13,7 @@ public interface BookingService {
 
 	public void generateTicket(TicketProxy ticketProxy);
 
+	public List<BookingDetails> getAllMergedBookings();
+
+	public String deleteBookingDetails(String paymentId);
 }
