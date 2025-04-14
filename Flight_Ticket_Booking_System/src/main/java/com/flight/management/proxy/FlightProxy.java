@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FlightProxy {
-	private Long id;
+	private String id;
 
 	@NotBlank(message = "Flight number cannot be null or empty.")
 	@Pattern(regexp = "^[A-Z0-9]+$", message = "Flight number must contain only uppercase letters and numbers.")

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingDetails {
-	private Long id;
+	private String id;
 	private String paymentId;
 	private String flightId;
 	private Double amount;
