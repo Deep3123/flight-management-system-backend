@@ -167,6 +167,7 @@ public class BookingServiceImpl implements BookingService {
 		List<BookingEntity> bookings = bookingRepo.findAll();
 		return bookings.stream().map(b -> {
 			BookingDetails dto = new BookingDetails();
+			System.err.println(b.getId());
 			dto.setId(b.getId());
 			dto.setPaymentId(b.getPaymentId());
 			dto.setFlightId(b.getFlightId());

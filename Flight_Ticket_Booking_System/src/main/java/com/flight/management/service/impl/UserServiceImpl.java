@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,6 +61,9 @@ public class UserServiceImpl implements UserService {
 		if (repo.findByUsername(userProxy.getUsername()).isEmpty()
 				&& repo.findByEmailId(userProxy.getEmailId()).isEmpty()) {
 			userProxy.setPassword(encoder.encode(userProxy.getPassword()));
+			userProxy.setCreatedAt(new Date());
+			userProxy.setUpdatedAt(new Date());
+
 			repo.save(MapperUtil.convertValue(userProxy, UserEntity.class));
 		}
 
@@ -108,6 +112,8 @@ public class UserServiceImpl implements UserService {
 //			if (userProxy.getPassword() != null)
 //				user.get().setPassword(encoder.encode(userProxy.getPassword()));
 ////				user.get().setPassword(userProxy.getPassword());
+
+			user.get().setUpdatedAt(new Date());
 
 			repo.save(user.get());
 

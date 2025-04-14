@@ -1,5 +1,6 @@
 package com.flight.management.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,6 +27,9 @@ public class FlightServiceImpl implements FlightService {
 		Optional<FlightEntity> flight = repo.findByFlightNumber(flightProxy.getFlightNumber());
 
 		if (flight.isEmpty() || flight.get() == null) {
+			flight.get().setCreatedAt(new Date());
+			flight.get().setUpdatedAt(new Date());
+
 			repo.save(MapperUtil.convertValue(flightProxy, FlightEntity.class));
 			return "Flight data saved successfully!!";
 		}
@@ -85,6 +89,8 @@ public class FlightServiceImpl implements FlightService {
 
 //			if (flightProxy.getAirlineName() != null)
 //				flight.get().setAirlineName(flightProxy.getAirlineName());
+
+			flight.get().setUpdatedAt(new Date());
 
 			// Save the updated flight
 			repo.save(flight.get());
