@@ -79,5 +79,4 @@ public class UserEntity {
 	private Date createdAt; // MongoDB can handle Date objects directly (no need for @CreationTimestamp)
 
 	private Date updatedAt; // MongoDB can handle Date objects directly (no need for @UpdateTimestamp)
-
 }
