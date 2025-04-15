@@ -1,5 +1,6 @@
 package com.flight.management.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import com.flight.management.proxy.BookingProxy;
 import com.flight.management.proxy.TicketProxy;
 import com.flight.management.repo.BookingRepo;
 import com.flight.management.repo.FlightRepo;
+import com.flight.management.repo.PassengerRepo;
 import com.flight.management.service.BookingService;
 import com.flight.management.util.MapperUtil;
 import com.flight.management.util.PDFGenerator;
@@ -44,6 +46,9 @@ public class BookingServiceImpl implements BookingService {
 
 	@Autowired
 	private FlightRepo repo;
+
+	@Autowired
+	private PassengerRepo passengerRepo;
 
 	@Value("${spring.mail.username}")
 	private String sender;
@@ -79,14 +84,43 @@ public class BookingServiceImpl implements BookingService {
 //			booking.setFlightJson(new ObjectMapper().writeValueAsString(request.getFlight()));
 //			bookingRepo.save(booking);
 
-			Optional<FlightEntity> flight = repo.findByFlightNumber(request.getFlightId());
+//			Optional<FlightEntity> flight = repo.findByFlightNumber(request.getFlightId());
+//
+//			if (flight.isPresent()) {
+//				flight.get().setSeatsAvailable(Math.abs(flight.get().getSeatsAvailable() - request.getCount()));
+//				repo.save(flight.get());
+//			}
+//
+//			bookingRepo.save(MapperUtil.convertValue(request, BookingEntity.class));
 
+			// 2. Save Passenger separately
+			PassengerEntity passenger = new PassengerEntity();
+			passenger.setFirstName(request.getPassenger().getFirstName());
+			passenger.setLastName(request.getPassenger().getLastName());
+			passenger.setAge(request.getPassenger().getAge());
+			passenger.setEmail(request.getPassenger().getEmail());
+			passenger.setMobile(request.getPassenger().getMobile());
+			passenger.setCountryCode(request.getPassenger().getCountryCode());
+
+			PassengerEntity savedPassenger = passengerRepo.save(passenger); // save first
+
+			// 3. Update available seats in flight
+			Optional<FlightEntity> flight = repo.findByFlightNumber(request.getFlightId());
 			if (flight.isPresent()) {
 				flight.get().setSeatsAvailable(Math.abs(flight.get().getSeatsAvailable() - request.getCount()));
 				repo.save(flight.get());
 			}
 
-			bookingRepo.save(MapperUtil.convertValue(request, BookingEntity.class));
+			// 4. Save Booking and link the saved passenger
+			BookingEntity booking = new BookingEntity();
+			booking.setPaymentId(request.getPaymentId());
+			booking.setAmount(request.getAmount());
+			booking.setFlightId(request.getFlightId());
+			booking.setCount(request.getCount());
+			booking.setBookingDate(new Date());
+			booking.setPassenger(savedPassenger); // link DBRef here
+
+			bookingRepo.save(booking); // now booking has a valid DBRef to the passenger
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace(); // Add this line
@@ -164,6 +198,7 @@ public class BookingServiceImpl implements BookingService {
 	@Override
 	public List<BookingDetails> getAllMergedBookings() {
 		// TODO Auto-generated method stub
+//		System.err.println(bookingRepo.findAll());
 		List<BookingEntity> bookings = bookingRepo.findAll();
 		return bookings.stream().map(b -> {
 			BookingDetails dto = new BookingDetails();

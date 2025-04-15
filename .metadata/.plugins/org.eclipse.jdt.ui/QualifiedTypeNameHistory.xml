@@ -16,7 +16,6 @@
     <fullyQualifiedTypeName name="java.time.LocalDateTime"/>
     <fullyQualifiedTypeName name="jakarta.validation.constraints.Negative"/>
     <fullyQualifiedTypeName name="org.hibernate.annotations.CreationTimestamp"/>
-    <fullyQualifiedTypeName name="com.flight.management.domain.PassengerEntity"/>
     <fullyQualifiedTypeName name="org.springframework.stereotype.Service"/>
     <fullyQualifiedTypeName name="com.flight.management.service.BookingService"/>
     <fullyQualifiedTypeName name="org.springframework.beans.factory.annotation.Value"/>
@@ -45,4 +44,9 @@
     <fullyQualifiedTypeName name="com.flight.management.domain.BookingEntity"/>
     <fullyQualifiedTypeName name="com.itextpdf.text.pdf.PdfStructTreeController.returnType"/>
     <fullyQualifiedTypeName name="org.springframework.http.HttpStatus"/>
+    <fullyQualifiedTypeName name="org.springframework.data.mongodb.repository.MongoRepository"/>
+    <fullyQualifiedTypeName name="com.flight.management.domain.PassengerEntity"/>
+    <fullyQualifiedTypeName name="com.flight.management.repo.PassengerRepo"/>
+    <fullyQualifiedTypeName name="org.springframework.beans.factory.annotation.Autowired"/>
+    <fullyQualifiedTypeName name="java.lang.Boolean"/>
 </qualifiedTypeNameHistroy>
