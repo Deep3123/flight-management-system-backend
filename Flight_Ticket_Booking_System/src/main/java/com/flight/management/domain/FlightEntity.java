@@ -68,7 +68,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-@Document(collection = "flights") // Replaces @Entity and @Table for MongoDB
+@Document(collection = "flight") // Replaces @Entity and @Table for MongoDB
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

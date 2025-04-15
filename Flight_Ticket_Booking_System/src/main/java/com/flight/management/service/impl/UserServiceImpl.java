@@ -97,23 +97,34 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public String updateUserByUsername(UserProxy userProxy) {
 		// TODO Auto-generated method stub
+		Boolean flag = false;
 		Optional<UserEntity> user = repo.findByUsername(userProxy.getUsername());
 
 		if (user.isPresent()) {
-			if (userProxy.getName() != null)
+			if (userProxy.getName() != null) {
+				if (userProxy.getName() != user.get().getName())
+					flag = true;
 				user.get().setName(userProxy.getName());
+			}
 
-			if (userProxy.getEmailId() != null)
+			if (userProxy.getEmailId() != null) {
+				if (userProxy.getEmailId() != user.get().getEmailId())
+					flag = true;
 				user.get().setEmailId(userProxy.getEmailId());
+			}
 
-			if (userProxy.getMobileNo() != null)
+			if (userProxy.getMobileNo() != null) {
+				if (userProxy.getMobileNo() != user.get().getMobileNo())
+					flag = true;
 				user.get().setMobileNo(userProxy.getMobileNo());
+			}
 
 //			if (userProxy.getPassword() != null)
 //				user.get().setPassword(encoder.encode(userProxy.getPassword()));
 ////				user.get().setPassword(userProxy.getPassword());
 
-			user.get().setUpdatedAt(new Date());
+			if (flag == true)
+				user.get().setUpdatedAt(new Date());
 
 			repo.save(user.get());
 

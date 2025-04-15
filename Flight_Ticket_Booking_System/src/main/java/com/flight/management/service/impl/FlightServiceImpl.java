@@ -1,5 +1,7 @@
 package com.flight.management.service.impl;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -117,17 +119,66 @@ public class FlightServiceImpl implements FlightService {
 	@Override
 	public List<FlightProxy> getFlightDetailsByUserDetails(FlightSearchProxy flightSearchProxy) {
 		// TODO Auto-generated method stub
-		Optional<List<FlightEntity>> flightList = repo
-				.findByDepartureAirportAndArrivalAirportAndDepartureDateAndArrivalDateAndFlightClass(
-						flightSearchProxy.getDepartureAirport(), flightSearchProxy.getArrivalAirport(),
-						flightSearchProxy.getDepartureDate(), flightSearchProxy.getArrivalDate(),
-						flightSearchProxy.getFlightClass());
+//		System.err.println(flightSearchProxy);
+//		Optional<List<FlightEntity>> flightList = repo
+//				.findByDepartureAirportAndArrivalAirportAndDepartureDateAndArrivalDateAndFlightClass(
+//						flightSearchProxy.getDepartureAirport(), flightSearchProxy.getArrivalAirport(),
+//						flightSearchProxy.getDepartureDate(), flightSearchProxy.getArrivalDate(),
+//						flightSearchProxy.getFlightClass());
+//		System.err.println(flightList.get());
+//		if (flightList.isPresent()) {
+//			return MapperUtil.convertListofValue(flightList.get().stream()
+//					.filter(obj -> obj.getSeatsAvailable() >= flightSearchProxy.getPersonCount())
+//					.collect(Collectors.toList()), FlightProxy.class);
+//		}
+//		return null;
 
-		if (flightList.isPresent()) {
-			return MapperUtil.convertListofValue(flightList.get().stream()
-					.filter(obj -> obj.getSeatsAvailable() >= flightSearchProxy.getPersonCount())
-					.collect(Collectors.toList()), FlightProxy.class);
+//		System.err.println(flightSearchProxy);
+//
+//		List<FlightEntity> flightList = repo
+//				.findByDepartureAirportAndArrivalAirportAndDepartureDateAndArrivalDateAndFlightClass(
+//						flightSearchProxy.getDepartureAirport(), flightSearchProxy.getArrivalAirport(),
+//						flightSearchProxy.getDepartureDate(), flightSearchProxy.getArrivalDate(),
+//						flightSearchProxy.getFlightClass());
+//
+//		if (!flightList.isEmpty()) {
+//			System.err.println(flightList);
+//			return MapperUtil.convertListofValue(
+//					flightList.stream().filter(obj -> obj.getSeatsAvailable() >= flightSearchProxy.getPersonCount())
+//							.collect(Collectors.toList()),
+//					FlightProxy.class);
+//		}
+//		return null;
+
+		System.err.println(flightSearchProxy);
+
+		// Convert java.util.Date to LocalDate
+		LocalDate depLocalDate = flightSearchProxy.getDepartureDate().toInstant().atZone(ZoneId.systemDefault())
+				.toLocalDate();
+
+		LocalDate arrLocalDate = flightSearchProxy.getArrivalDate().toInstant().atZone(ZoneId.systemDefault())
+				.toLocalDate();
+
+		// Create start and end of the day for both departure and arrival dates
+		Date depStart = Date.from(depLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		Date depEnd = Date.from(depLocalDate.atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant());
+
+		Date arrStart = Date.from(arrLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		Date arrEnd = Date.from(arrLocalDate.atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant());
+
+		// Use a custom query in the repository with $gte and $lte
+		List<FlightEntity> flightList = repo.findFlightsInRange(flightSearchProxy.getDepartureAirport(),
+				flightSearchProxy.getArrivalAirport(), depStart, depEnd, arrStart, arrEnd,
+				flightSearchProxy.getFlightClass());
+
+		if (!flightList.isEmpty()) {
+			System.err.println(flightList);
+			return MapperUtil.convertListofValue(
+					flightList.stream().filter(obj -> obj.getSeatsAvailable() >= flightSearchProxy.getPersonCount())
+							.collect(Collectors.toList()),
+					FlightProxy.class);
 		}
 		return null;
+
 	}
 }
