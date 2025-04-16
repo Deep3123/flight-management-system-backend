@@ -261,6 +261,7 @@ public class UserServiceImpl implements UserService {
 
 		if (user.isPresent()) {
 			if (generator.validateToken(time, decodedToken, user.get())) {
+				user.get().setUpdatedAt(new Date());
 				user.get().setPassword(encoder.encode(proxy.getPassword()));
 				repo.save(user.get());
 				return "Password was updated successfully.";

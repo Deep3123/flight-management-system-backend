@@ -1,5 +1,6 @@
 package com.flight.management.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +78,8 @@ public class ContactServiceImpl implements ContactService {
 
 				// Send the email
 				javaMailSender.send(mimeMessage);
+
+				contactProxy.setSubmittedAt(new Date());
 
 				// Save the contact details to the repository
 				repo.save(MapperUtil.convertValue(contactProxy, ContactEntity.class));
