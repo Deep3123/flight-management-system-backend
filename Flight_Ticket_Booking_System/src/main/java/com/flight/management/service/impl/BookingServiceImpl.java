@@ -101,6 +101,7 @@ public class BookingServiceImpl implements BookingService {
 			passenger.setEmail(request.getPassenger().getEmail());
 			passenger.setMobile(request.getPassenger().getMobile());
 			passenger.setCountryCode(request.getPassenger().getCountryCode());
+			passenger.setCreatedAt(new Date());
 
 			PassengerEntity savedPassenger = passengerRepo.save(passenger); // save first
 
@@ -228,6 +229,7 @@ public class BookingServiceImpl implements BookingService {
 		Optional<BookingEntity> booking = bookingRepo.findByPaymentId(paymentId);
 
 		if (booking.isPresent()) {
+			passengerRepo.delete(booking.get().getPassenger());
 			bookingRepo.delete(booking.get());
 			return "Booking details deleted successfully.";
 		}

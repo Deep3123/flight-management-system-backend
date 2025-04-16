@@ -150,7 +150,7 @@ public class FlightServiceImpl implements FlightService {
 //		}
 //		return null;
 
-		System.err.println(flightSearchProxy);
+//		System.err.println(flightSearchProxy);
 
 		// Convert java.util.Date to LocalDate
 		LocalDate depLocalDate = flightSearchProxy.getDepartureDate().toInstant().atZone(ZoneId.systemDefault())
@@ -172,7 +172,7 @@ public class FlightServiceImpl implements FlightService {
 				flightSearchProxy.getFlightClass());
 
 		if (!flightList.isEmpty()) {
-			System.err.println(flightList);
+//			System.err.println(flightList);
 			return MapperUtil.convertListofValue(
 					flightList.stream().filter(obj -> obj.getSeatsAvailable() >= flightSearchProxy.getPersonCount())
 							.collect(Collectors.toList()),
