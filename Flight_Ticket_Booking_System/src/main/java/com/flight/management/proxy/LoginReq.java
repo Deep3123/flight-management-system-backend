@@ -14,4 +14,7 @@ public class LoginReq {
 
 	@NotBlank(message = "Password cannot be blank.")
 	private String password;
+
+	@NotBlank(message = "Captcha cannot be blank.")
+	private String captchaInput;
 }
