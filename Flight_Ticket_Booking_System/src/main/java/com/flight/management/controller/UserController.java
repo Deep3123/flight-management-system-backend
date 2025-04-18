@@ -21,6 +21,7 @@ import com.flight.management.proxy.Response;
 import com.flight.management.proxy.UserProxy;
 import com.flight.management.service.UserService;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 //@CrossOrigin(origins = "http://localhost:4200")
@@ -112,12 +113,34 @@ public class UserController {
 					HttpStatus.NOT_FOUND.toString()), HttpStatus.NOT_FOUND);
 	}
 
+//	@PostMapping("/login")
+//	public ResponseEntity<?> login(@RequestBody LoginReq req) {
+//		try {
+//			LoginResp res = service.login(req);
+////			System.err.println(req.getUsername());
+////			System.err.println(req.getPassword());
+//			return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
+//		} catch (RuntimeException e) {
+//			return new ResponseEntity<>(new Response(e.getMessage(), HttpStatus.UNAUTHORIZED.toString()),
+//					HttpStatus.UNAUTHORIZED);
+//		}
+//	}
+
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody LoginReq req) {
+	public ResponseEntity<?> login(@RequestBody LoginReq req, HttpSession session) {
+		// Step 1: Validate CAPTCHA
+//		System.err.println(req.getCaptchaInput());
+		String expectedCaptcha = (String) session.getAttribute("captcha");
+//		System.err.println(expectedCaptcha);
+		if (expectedCaptcha == null || !expectedCaptcha.equalsIgnoreCase(req.getCaptchaInput())) {
+			return new ResponseEntity<>(
+					new Response("Invalid CAPTCHA. Please try again.", HttpStatus.UNAUTHORIZED.toString()),
+					HttpStatus.UNAUTHORIZED);
+		}
+
+		// Step 2: Proceed with normal login
 		try {
 			LoginResp res = service.login(req);
-//			System.err.println(req.getUsername());
-//			System.err.println(req.getPassword());
 			return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
 		} catch (RuntimeException e) {
 			return new ResponseEntity<>(new Response(e.getMessage(), HttpStatus.UNAUTHORIZED.toString()),

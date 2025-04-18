@@ -42,9 +42,11 @@ public class SecurityConfig {
 			corsConfig.setAllowedOrigins(List.of("http://localhost:4200")); // Update with frontend URL
 			corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 			corsConfig.setAllowedHeaders(List.of("*"));
+			corsConfig.setAllowCredentials(true);
 			return corsConfig;
 		})).authorizeHttpRequests(auth -> auth
-				.requestMatchers("/user/register", "/user/login", "/user/forgot-password", "/user/reset-password/**")
+				.requestMatchers("/user/register", "/user/login", "/user/forgot-password", "/user/reset-password/**",
+						"/captcha")
 				.permitAll()
 				.requestMatchers("/user/get-all-user-details", "/flight/add-flight-details",
 						"/flight/update-flight-details", "/flight/delete-flight-details/**",
@@ -54,7 +56,8 @@ public class SecurityConfig {
 //				.formLogin(Customizer.withDefaults())
 //				.httpBasic(Customizer.withDefaults())
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+//				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 
 		return http.build();
 	}
