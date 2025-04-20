@@ -92,6 +92,9 @@ public class FlightServiceImpl implements FlightService {
 //			if (flightProxy.getAirlineName() != null)
 //				flight.get().setAirlineName(flightProxy.getAirlineName());
 
+			if (flightProxy.getFlightClass() != null)
+				flight.get().setFlightClass(flightProxy.getFlightClass());
+
 			flight.get().setUpdatedAt(new Date());
 
 			// Save the updated flight
