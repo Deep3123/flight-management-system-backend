@@ -22,7 +22,8 @@ public class CaptchaController {
 		captchaToken = captchaToken.substring(0, 6);
 		// Store CAPTCHA token in session
 		session.setAttribute("captcha", captchaToken);
-//		System.err.println(captchaToken);
+		System.err.println(captchaToken);
+		
 
 		response.setContentType("image/png");
 		cage.draw(captchaToken, response.getOutputStream());
