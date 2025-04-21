@@ -129,9 +129,10 @@ public class UserController {
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginReq req, HttpSession session) {
 		// Step 1: Validate CAPTCHA
-//		System.err.println(req.getCaptchaInput());
+		System.err.println(req.getCaptchaInput());
 		String expectedCaptcha = (String) session.getAttribute("captcha");
-//		System.err.println(expectedCaptcha);
+		System.err.println(expectedCaptcha);
+
 		if (expectedCaptcha == null || !expectedCaptcha.equalsIgnoreCase(req.getCaptchaInput())) {
 			return new ResponseEntity<>(
 					new Response("Invalid CAPTCHA. Please try again.", HttpStatus.UNAUTHORIZED.toString()),
