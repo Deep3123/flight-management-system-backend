@@ -47,7 +47,7 @@ public class CaptchaController {
 
 		// Store CAPTCHA with the session ID
 		captchaStore.put(sessionId, captchaToken);
-		System.err.println("Stored captcha: " + captchaToken + " for session: " + sessionId);
+//		System.err.println("Stored captcha: " + captchaToken + " for session: " + sessionId);
 
 		// Set the session ID in the response header
 		response.setHeader("X-Auth-Token", sessionId);
@@ -62,8 +62,8 @@ public class CaptchaController {
 			return false;
 
 		String storedCaptcha = captchaStore.get(sessionId);
-		System.err.println(
-				"Validating - Session: " + sessionId + ", User Input: " + userInput + ", Stored: " + storedCaptcha);
+//		System.err.println(
+//				"Validating - Session: " + sessionId + ", User Input: " + userInput + ", Stored: " + storedCaptcha);
 
 		if (storedCaptcha != null && storedCaptcha.equalsIgnoreCase(userInput)) {
 			captchaStore.remove(sessionId); // Use once only

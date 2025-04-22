@@ -157,7 +157,7 @@ public class UserController {
 	public ResponseEntity<?> login(@RequestBody LoginReq req,
 			@RequestHeader(value = "X-Auth-Token", required = false) String sessionToken) {
 		// Validate CAPTCHA using the token from header
-		System.err.println("Login with captcha: " + req.getCaptchaInput() + ", token: " + sessionToken);
+//		System.err.println("Login with captcha: " + req.getCaptchaInput() + ", token: " + sessionToken);
 
 		if (sessionToken == null || !captchaController.validateCaptcha(sessionToken, req.getCaptchaInput())) {
 			return new ResponseEntity<>(
