@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,6 +31,9 @@ import jakarta.validation.Valid;
 public class UserController {
 	@Autowired
 	private UserService service;
+
+	@Autowired
+	private CaptchaController captchaController;
 
 	@PostMapping("/register")
 	public ResponseEntity<?> saveUserDetails(@Valid @RequestBody UserProxy userProxy, BindingResult bindingResult) {
@@ -126,20 +130,42 @@ public class UserController {
 //		}
 //	}
 
-	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody LoginReq req, HttpSession session) {
-		// Step 1: Validate CAPTCHA
-		System.err.println(req.getCaptchaInput());
-		String expectedCaptcha = (String) session.getAttribute("captcha");
-		System.err.println(expectedCaptcha);
+//	@PostMapping("/login")
+//	public ResponseEntity<?> login(@RequestBody LoginReq req, HttpSession session) {
+//		// Step 1: Validate CAPTCHA
+//		System.err.println(req.getCaptchaInput());
+//		String expectedCaptcha = (String) session.getAttribute("captcha");
+//		System.err.println(expectedCaptcha);
+//
+//		if (expectedCaptcha == null || !expectedCaptcha.equalsIgnoreCase(req.getCaptchaInput())) {
+//			return new ResponseEntity<>(
+//					new Response("Invalid CAPTCHA. Please try again.", HttpStatus.UNAUTHORIZED.toString()),
+//					HttpStatus.UNAUTHORIZED);
+//		}
+//
+//		// Step 2: Proceed with normal login
+//		try {
+//			LoginResp res = service.login(req);
+//			return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
+//		} catch (RuntimeException e) {
+//			return new ResponseEntity<>(new Response(e.getMessage(), HttpStatus.UNAUTHORIZED.toString()),
+//					HttpStatus.UNAUTHORIZED);
+//		}
+//	}
 
-		if (expectedCaptcha == null || !expectedCaptcha.equalsIgnoreCase(req.getCaptchaInput())) {
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody LoginReq req,
+			@RequestHeader(value = "X-Auth-Token", required = false) String sessionToken) {
+		// Validate CAPTCHA using the token from header
+		System.err.println("Login with captcha: " + req.getCaptchaInput() + ", token: " + sessionToken);
+
+		if (sessionToken == null || !captchaController.validateCaptcha(sessionToken, req.getCaptchaInput())) {
 			return new ResponseEntity<>(
 					new Response("Invalid CAPTCHA. Please try again.", HttpStatus.UNAUTHORIZED.toString()),
 					HttpStatus.UNAUTHORIZED);
 		}
 
-		// Step 2: Proceed with normal login
+		// Proceed with normal login
 		try {
 			LoginResp res = service.login(req);
 			return new ResponseEntity<>(res, HttpStatus.ACCEPTED);

@@ -139,7 +139,7 @@ public class SecurityConfig {
 						"/contact/get-all-contact-us-details", "/contact/get-all-contact-us-details-by-name/**")
 				.hasAuthority("ADMIN").anyRequest().authenticated())
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
+				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)); // Important change
 		return http.build();
 	}
 

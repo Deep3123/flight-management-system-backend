@@ -188,7 +188,9 @@ public class UserServiceImpl implements UserService {
 
 			String username = Base64.getEncoder().encodeToString(user.get().getUsername().getBytes());
 
-			String url = "http://localhost:4200/reset-password/" + username + "/" + timestamp + "/" + encodedToken;
+//			String url = "http://localhost:4200/reset-password/" + username + "/" + timestamp + "/" + encodedToken;
+			String url = "https://jetwayz.vercel.app/reset-password/" + username + "/" + timestamp + "/" + encodedToken;
+
 			System.err.println(url);
 
 //			SimpleMailMessage mailMessage = new SimpleMailMessage();
