@@ -23,20 +23,40 @@ public class FlightServiceImpl implements FlightService {
 	@Autowired
 	private FlightRepo repo;
 
+//	@Override
+//	public String addFlightDetails(FlightProxy flightProxy) {
+//		// TODO Auto-generated method stub
+//		Optional<FlightEntity> flight = repo.findByFlightNumber(flightProxy.getFlightNumber());
+//
+//		if (flight.isEmpty() || flight.get() == null) {
+//			flight.get().setCreatedAt(new Date());
+//			flight.get().setUpdatedAt(new Date());
+//
+//			repo.save(MapperUtil.convertValue(flightProxy, FlightEntity.class));
+//			return "Flight data saved successfully!!";
+//		}
+//
+//		return "Flight already exist with given flight number.";
+//	}
+
 	@Override
 	public String addFlightDetails(FlightProxy flightProxy) {
-		// TODO Auto-generated method stub
+		// Fetch the flight based on flight number
 		Optional<FlightEntity> flight = repo.findByFlightNumber(flightProxy.getFlightNumber());
 
-		if (flight.isEmpty() || flight.get() == null) {
-			flight.get().setCreatedAt(new Date());
-			flight.get().setUpdatedAt(new Date());
+		// Check if the flight does not exist (empty Optional)
+		if (flight.isEmpty()) {
+			// Create a new FlightEntity and set the fields
+			FlightEntity newFlight = MapperUtil.convertValue(flightProxy, FlightEntity.class);
+			newFlight.setCreatedAt(new Date());
+			newFlight.setUpdatedAt(new Date());
 
-			repo.save(MapperUtil.convertValue(flightProxy, FlightEntity.class));
+			// Save the new flight
+			repo.save(newFlight);
 			return "Flight data saved successfully!!";
 		}
 
-		return "Flight already exist with given flight number.";
+		return "Flight already exists with the given flight number.";
 	}
 
 	@Override

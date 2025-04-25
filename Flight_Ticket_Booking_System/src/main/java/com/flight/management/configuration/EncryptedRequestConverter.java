@@ -100,11 +100,11 @@ public class EncryptedRequestConverter extends AbstractHttpMessageConverter<Obje
 			throws IOException, HttpMessageNotReadableException {
 		// Read encrypted string
 		String encryptedData = new String(inputMessage.getBody().readAllBytes());
-//		System.err.println("encryptedData-----> " + encryptedData);
+		System.err.println("encryptedData-----> " + encryptedData);
 
 		// Decrypt
 		String decryptedJson = encryptionUtil.decrypt(encryptedData);
-//		System.err.println("decryptedJson-----> " + decryptedJson);
+		System.err.println("decryptedJson-----> " + decryptedJson);
 		// Deserialize decrypted JSON to object
 		return objectMapper.readValue(decryptedJson, clazz);
 	}
@@ -114,11 +114,11 @@ public class EncryptedRequestConverter extends AbstractHttpMessageConverter<Obje
 			throws IOException, HttpMessageNotWritableException {
 		// Serialize object to JSON
 		String jsonData = objectMapper.writeValueAsString(object);
-//		System.err.println("jsonData-----> " + jsonData);
+		System.err.println("jsonData-----> " + jsonData);
 
 		// Encrypt
 		String encryptedData = encryptionUtil.encrypt(jsonData);
-//		System.err.println("encryptedData-----> " + encryptedData);
+		System.err.println("encryptedData-----> " + encryptedData);
 
 		// Set content type to text/plain explicitly for responses
 		outputMessage.getHeaders().setContentType(MediaType.TEXT_PLAIN);
