@@ -69,7 +69,10 @@ org.eclipse.egit.ui.UncommittedChangeForegroundColor=216,220,223
 org.eclipse.jdt.internal.ui.compare.JavaMergeViewer=1|Fira Code|14.25|0|WINDOWS|1|-19|0|0|0|400|0|0|0|0|3|2|1|1|Fira Code;
 org.eclipse.jdt.internal.ui.compare.PropertiesFileMergeViewer=1|Fira Code|14.25|0|WINDOWS|1|-19|0|0|0|400|0|0|0|0|3|2|1|1|Fira Code;
 org.eclipse.jdt.ui.ColoredLabels.inherited=143,143,191
+<<<<<<< HEAD
 org.eclipse.jdt.ui.ColoredLabels.match_highlight=73,83,90
+=======
+>>>>>>> fd7355d744c1dffbd473fd6cf1dd8f9b46bcbcc6
 org.eclipse.jdt.ui.ColoredLabels.writeaccess_highlight=255,128,128
 org.eclipse.jdt.ui.Javadoc.backgroundColor=48,54,59
 org.eclipse.jdt.ui.Javadoc.foregroundColor=235,237,239
