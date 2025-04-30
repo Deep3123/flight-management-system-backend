@@ -34,3 +34,6 @@ build/
 =======
 /.metadata/
 .env
+/Flight_Ticket_Booking_System/.env
+/Flight_Ticket_Booking_System/git-filter-repo
+git-filter-repo
