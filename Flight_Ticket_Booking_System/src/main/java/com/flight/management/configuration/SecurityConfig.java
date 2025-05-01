@@ -85,6 +85,7 @@
 package com.flight.management.configuration;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -99,13 +100,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
 import org.springframework.session.web.http.HttpSessionIdResolver;
 
 import com.flight.management.filter.JwtFilter;
+import com.flight.management.service.impl.CustomOAuth2UserService;
 import com.flight.management.service.impl.CustomUserDetailsService;
+import com.flight.management.service.impl.OAuth2AuthSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -115,6 +118,12 @@ public class SecurityConfig {
 
 	@Autowired
 	private JwtFilter jwtFilter;
+
+	@Autowired
+	private CustomOAuth2UserService oAuth2UserService;
+
+	@Autowired
+	private OAuth2AuthSuccessHandler oAuth2AuthSuccessHandler;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -139,6 +148,8 @@ public class SecurityConfig {
 						"/flight/get-all-flights-details", "/flight/get-flights-details-by-flight-number/**",
 						"/contact/get-all-contact-us-details", "/contact/get-all-contact-us-details-by-name/**")
 				.hasAuthority("ADMIN").anyRequest().authenticated())
+				.oauth2Login(oauth2 -> oauth2.userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+						.successHandler(oAuth2AuthSuccessHandler))
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)); // Important change
 		return http.build();

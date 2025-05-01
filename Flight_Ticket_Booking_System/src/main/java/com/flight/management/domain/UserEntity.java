@@ -64,7 +64,7 @@ public class UserEntity {
 	private String id; // MongoDB typically uses String for IDs, so it will be ObjectId in MongoDB by
 						// default
 
-	private String name;
+	private String name;	
 
 	private String emailId;
 
