@@ -12,10 +12,16 @@ public class DotenvConfig implements EnvironmentPostProcessor {
 
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-		Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
-		Properties properties = new Properties();
-		dotenv.entries().forEach(entry -> properties.setProperty(entry.getKey(), entry.getValue()));
-		PropertiesPropertySource propertySource = new PropertiesPropertySource("dotenv", properties);
-		environment.getPropertySources().addFirst(propertySource);
+		// Only load dotenv if a specific environment variable is NOT set (e.g.,
+		// production indicator)
+		if (System.getenv("RENDER") == null) {
+			Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+
+			Properties properties = new Properties();
+			dotenv.entries().forEach(entry -> properties.setProperty(entry.getKey(), entry.getValue()));
+
+			PropertiesPropertySource propertySource = new PropertiesPropertySource("dotenv", properties);
+			environment.getPropertySources().addFirst(propertySource);
+		}
 	}
 }

@@ -112,6 +112,7 @@ import com.flight.management.service.impl.CustomUserDetailsService;
 public class SecurityConfig {
 	@Autowired
 	private CustomUserDetailsService service;
+
 	@Autowired
 	private JwtFilter jwtFilter;
 
