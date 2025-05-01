@@ -10,18 +10,20 @@ import java.util.Properties;
 
 public class DotenvConfig implements EnvironmentPostProcessor {
 
-	@Override
-	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-		// Only load dotenv if a specific environment variable is NOT set (e.g.,
-		// production indicator)
-		if (System.getenv("RENDER") == null) {
-			Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+    @Override
+    public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+        // Check if the active profile is 'dev' or 'local' (you can set your environment variable for dev)
+        String activeProfile = System.getenv("SPRING_PROFILES_ACTIVE");
 
-			Properties properties = new Properties();
-			dotenv.entries().forEach(entry -> properties.setProperty(entry.getKey(), entry.getValue()));
+        // Load dotenv only if active profile is 'dev' or 'local'
+        if (activeProfile == null || activeProfile.equals("dev") || activeProfile.equals("local")) {
+            Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
 
-			PropertiesPropertySource propertySource = new PropertiesPropertySource("dotenv", properties);
-			environment.getPropertySources().addFirst(propertySource);
-		}
-	}
+            Properties properties = new Properties();
+            dotenv.entries().forEach(entry -> properties.setProperty(entry.getKey(), entry.getValue()));
+
+            PropertiesPropertySource propertySource = new PropertiesPropertySource("dotenv", properties);
+            environment.getPropertySources().addFirst(propertySource);
+        }
+    }
 }
