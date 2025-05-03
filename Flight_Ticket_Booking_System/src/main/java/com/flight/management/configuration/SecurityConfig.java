@@ -141,7 +141,7 @@ public class SecurityConfig {
 			return corsConfig;
 		})).authorizeHttpRequests(auth -> auth
 				.requestMatchers("/user/register", "/user/login", "/user/forgot-password", "/user/reset-password/**",
-						"/captcha")
+						"/captcha", "/oauth/complete-profile")
 				.permitAll()
 				.requestMatchers("/user/get-all-user-details", "/flight/add-flight-details",
 						"/flight/update-flight-details", "/flight/delete-flight-details/**",
