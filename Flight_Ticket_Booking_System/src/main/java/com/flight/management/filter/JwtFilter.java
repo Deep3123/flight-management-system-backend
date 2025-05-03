@@ -39,6 +39,12 @@ public class JwtFilter extends OncePerRequestFilter {
 //			System.out.println("Header: " + headerName + " = " + request.getHeader(headerName));
 //		}
 
+		String path = request.getRequestURI();
+		if (path.equals("/oauth/complete-profile")) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+
 		String token = jwtService.getTokenFromRequest(request);
 //		System.err.println(token);
 

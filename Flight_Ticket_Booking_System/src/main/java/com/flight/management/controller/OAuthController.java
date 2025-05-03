@@ -35,7 +35,7 @@ public class OAuthController {
 	@PostMapping("/complete-profile")
 	public ResponseEntity<?> completeProfile(@Valid @RequestBody OAuthProfileCompletion profileData,
 			@RequestHeader("Authorization") String authHeader, BindingResult bindingResult) {
-
+		System.err.println("Request is at Oauth controller.");
 		if (bindingResult.hasErrors()) {
 			List<String> errors = bindingResult.getFieldErrors().stream().map(error -> error.getDefaultMessage())
 					.collect(Collectors.toList());

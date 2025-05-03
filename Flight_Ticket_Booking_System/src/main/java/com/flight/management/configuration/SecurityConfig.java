@@ -84,11 +84,13 @@
 
 package com.flight.management.configuration;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -104,11 +106,184 @@ import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
 import org.springframework.session.web.http.HttpSessionIdResolver;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.flight.management.filter.JwtFilter;
 import com.flight.management.service.impl.CustomOAuth2UserService;
 import com.flight.management.service.impl.CustomUserDetailsService;
 import com.flight.management.service.impl.OAuth2AuthSuccessHandler;
+
+//@Configuration
+//@EnableWebSecurity
+//public class SecurityConfig {
+//	@Autowired
+//	private CustomUserDetailsService service;
+//
+//	@Autowired
+//	private JwtFilter jwtFilter;
+//
+//	@Autowired
+//	private CustomOAuth2UserService oAuth2UserService;
+//
+//	@Autowired
+//	private OAuth2AuthSuccessHandler oAuth2AuthSuccessHandler;
+//
+//	@Bean
+//	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//		http.csrf(csrf -> csrf.disable()).cors(cors -> cors.configurationSource(request -> {
+//			var corsConfig = new org.springframework.web.cors.CorsConfiguration();
+//			corsConfig.setAllowedOrigins(List.of("http://localhost:4200", "https://jetwayz.vercel.app", // Removed
+//																										// trailing
+//																										// slash
+//					"http://jetwayz-deep3123s-projects.vercel.app" // Removed trailing slash
+//			));
+//			corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+//			corsConfig.setAllowedHeaders(List.of("*"));
+//			corsConfig.setExposedHeaders(List.of("X-Auth-Token")); // Expose session header
+//			corsConfig.setAllowCredentials(true);
+//			return corsConfig;
+//		})).authorizeHttpRequests(auth -> auth
+//				.requestMatchers("/user/register", "/user/login", "/user/forgot-password", "/user/reset-password/**",
+//						"/captcha", "/oauth/complete-profile")
+//				.permitAll()
+//				.requestMatchers("/user/get-all-user-details", "/flight/add-flight-details",
+//						"/flight/update-flight-details", "/flight/delete-flight-details/**",
+//						"/flight/get-all-flights-details", "/flight/get-flights-details-by-flight-number/**",
+//						"/contact/get-all-contact-us-details", "/contact/get-all-contact-us-details-by-name/**")
+//				.hasAuthority("ADMIN").anyRequest().authenticated())
+//				.oauth2Login(oauth2 -> oauth2.userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+//						.successHandler(oAuth2AuthSuccessHandler))
+//				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+//				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)); // Important change
+//		return http.build();
+//	}
+//
+//	@Bean
+//	public CookieSerializer cookieSerializer() {
+//		DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+//		serializer.setSameSite("None");
+//		serializer.setUseSecureCookie(true);
+//		serializer.setCookieName("JSESSIONID");
+//		serializer.setCookiePath("/");
+//		serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$"); // Allows subdomains
+//		return serializer;
+//	}
+//
+//	@Bean
+//	public HttpSessionIdResolver httpSessionIdResolver() {
+//		return HeaderHttpSessionIdResolver.xAuthToken();
+//	}
+//
+//	@Bean
+//	public PasswordEncoder passwordEncoder() {
+//		return new BCryptPasswordEncoder();
+//	}
+//
+//	@Bean
+//	public AuthenticationProvider authenticationProvider() {
+//		DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
+//		auth.setUserDetailsService(service);
+//		auth.setPasswordEncoder(passwordEncoder());
+//		return auth;
+//	}
+//
+//	@Bean
+//	public AuthenticationManager authenticationManager(AuthenticationConfiguration auth) throws Exception {
+//		return auth.getAuthenticationManager();
+//	}
+//}
+
+//@Configuration
+//@EnableWebSecurity
+//public class SecurityConfig {
+//	@Autowired
+//	private CustomUserDetailsService service;
+//
+//	@Autowired
+//	private JwtFilter jwtFilter;
+//
+//	@Autowired
+//	private CustomOAuth2UserService oAuth2UserService;
+//
+//	@Autowired
+//	private OAuth2AuthSuccessHandler oAuth2AuthSuccessHandler;
+//
+//	// Add authorization request repository for OAuth2
+//	@Bean
+//	public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
+//		return new HttpCookieOAuth2AuthorizationRequestRepository();
+//	}
+//
+//	@Bean
+//	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//		http.csrf(csrf -> csrf.disable()).cors(cors -> cors.configurationSource(request -> {
+//			var corsConfig = new org.springframework.web.cors.CorsConfiguration();
+//			corsConfig.setAllowedOrigins(List.of("http://localhost:4200", "https://jetwayz.vercel.app",
+//					"http://jetwayz-deep3123s-projects.vercel.app"));
+//			corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+//			corsConfig.setAllowedHeaders(List.of("*"));
+//			corsConfig.setExposedHeaders(List.of("X-Auth-Token"));
+//			corsConfig.setAllowCredentials(true);
+//			return corsConfig;
+//		})).authorizeHttpRequests(auth -> auth
+//				.requestMatchers("/user/register", "/user/login", "/user/forgot-password", "/user/reset-password/**",
+//						"/captcha", "/oauth/complete-profile", "/login", "/oauth2/authorization/**",
+//						"/login/oauth2/code/**")
+//				.permitAll()
+//				.requestMatchers("/user/get-all-user-details", "/flight/add-flight-details",
+//						"/flight/update-flight-details", "/flight/delete-flight-details/**",
+//						"/flight/get-all-flights-details", "/flight/get-flights-details-by-flight-number/**",
+//						"/contact/get-all-contact-us-details", "/contact/get-all-contact-us-details-by-name/**")
+//				.hasAuthority("ADMIN").anyRequest().authenticated())
+//				.oauth2Login(oauth2 -> oauth2
+//						.authorizationEndpoint(authorization -> authorization
+//								.authorizationRequestRepository(cookieAuthorizationRequestRepository()))
+//						.userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+//						.successHandler(oAuth2AuthSuccessHandler))
+//				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+//				// Use STATELESS for JWT-based auth but still handle OAuth2 state
+//				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+//
+//		return http.build();
+//	}
+//
+//	@Bean
+//	public CookieSerializer cookieSerializer() {
+//		DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+//		serializer.setSameSite("None");
+//		serializer.setUseSecureCookie(true);
+//		serializer.setCookieName("JSESSIONID");
+//		serializer.setCookiePath("/");
+//		serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
+//		return serializer;
+//	}
+//
+//	// Remove this for stateless JWT setup
+//	// @Bean
+//	// public HttpSessionIdResolver httpSessionIdResolver() {
+//	// return HeaderHttpSessionIdResolver.xAuthToken();
+//	// }
+//
+//	@Bean
+//	public PasswordEncoder passwordEncoder() {
+//		return new BCryptPasswordEncoder();
+//	}
+//
+//	@Bean
+//	public AuthenticationProvider authenticationProvider() {
+//		DaoAuthenticationProvider auth = new DaoAuthenticationProvider();
+//		auth.setUserDetailsService(service);
+//		auth.setPasswordEncoder(passwordEncoder());
+//		return auth;
+//	}
+//
+//	@Bean
+//	public AuthenticationManager authenticationManager(AuthenticationConfiguration auth) throws Exception {
+//		return auth.getAuthenticationManager();
+//	}
+//}
 
 @Configuration
 @EnableWebSecurity
@@ -122,37 +297,54 @@ public class SecurityConfig {
 	@Autowired
 	private CustomOAuth2UserService oAuth2UserService;
 
+	@Lazy
 	@Autowired
 	private OAuth2AuthSuccessHandler oAuth2AuthSuccessHandler;
 
+	// Add authorization request repository for OAuth2
+	@Bean
+	public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
+		return new HttpCookieOAuth2AuthorizationRequestRepository();
+	}
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.csrf(csrf -> csrf.disable()).cors(cors -> cors.configurationSource(request -> {
-			var corsConfig = new org.springframework.web.cors.CorsConfiguration();
-			corsConfig.setAllowedOrigins(List.of("http://localhost:4200", "https://jetwayz.vercel.app", // Removed
-																										// trailing
-																										// slash
-					"http://jetwayz-deep3123s-projects.vercel.app" // Removed trailing slash
-			));
-			corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-			corsConfig.setAllowedHeaders(List.of("*"));
-			corsConfig.setExposedHeaders(List.of("X-Auth-Token")); // Expose session header
-			corsConfig.setAllowCredentials(true);
-			return corsConfig;
-		})).authorizeHttpRequests(auth -> auth
-				.requestMatchers("/user/register", "/user/login", "/user/forgot-password", "/user/reset-password/**",
-						"/captcha", "/oauth/complete-profile")
-				.permitAll()
-				.requestMatchers("/user/get-all-user-details", "/flight/add-flight-details",
-						"/flight/update-flight-details", "/flight/delete-flight-details/**",
-						"/flight/get-all-flights-details", "/flight/get-flights-details-by-flight-number/**",
-						"/contact/get-all-contact-us-details", "/contact/get-all-contact-us-details-by-name/**")
-				.hasAuthority("ADMIN").anyRequest().authenticated())
-				.oauth2Login(oauth2 -> oauth2.userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+		http.csrf(csrf -> csrf.disable()).cors(cors -> cors.configurationSource(corsConfigurationSource()))
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers("/user/register", "/user/login", "/user/forgot-password",
+								"/user/reset-password/**", "/captcha", "/oauth/complete-profile", "/login",
+								"/oauth2/authorization/**", "/login/oauth2/code/**")
+						.permitAll()
+						.requestMatchers("/user/get-all-user-details", "/flight/add-flight-details",
+								"/flight/update-flight-details", "/flight/delete-flight-details/**",
+								"/flight/get-all-flights-details", "/flight/get-flights-details-by-flight-number/**",
+								"/contact/get-all-contact-us-details", "/contact/get-all-contact-us-details-by-name/**")
+						.hasAuthority("ADMIN").anyRequest().authenticated())
+				.oauth2Login(oauth2 -> oauth2
+						.authorizationEndpoint(authorization -> authorization.baseUri("/oauth2/authorization")
+								.authorizationRequestRepository(cookieAuthorizationRequestRepository()))
+						.redirectionEndpoint(redirection -> redirection.baseUri("/login/oauth2/code/*"))
+						.userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
 						.successHandler(oAuth2AuthSuccessHandler))
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)); // Important change
+				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
 		return http.build();
+	}
+
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200", "https://jetwayz.vercel.app",
+				"http://jetwayz-deep3123s-projects.vercel.app"));
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		configuration.setAllowedHeaders(Arrays.asList("*"));
+		configuration.setExposedHeaders(Arrays.asList("X-Auth-Token"));
+		configuration.setAllowCredentials(true);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
 	}
 
 	@Bean
@@ -162,13 +354,8 @@ public class SecurityConfig {
 		serializer.setUseSecureCookie(true);
 		serializer.setCookieName("JSESSIONID");
 		serializer.setCookiePath("/");
-		serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$"); // Allows subdomains
+		serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
 		return serializer;
-	}
-
-	@Bean
-	public HttpSessionIdResolver httpSessionIdResolver() {
-		return HeaderHttpSessionIdResolver.xAuthToken();
 	}
 
 	@Bean
