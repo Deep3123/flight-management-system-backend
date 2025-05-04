@@ -1,5 +1,6 @@
 package com.flight.management.service.impl;
 
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.UUID;
 
@@ -26,6 +27,14 @@ public class OAuthServiceImpl implements OAuthService {
 	@Autowired
 	private PasswordEncoder encoder;
 
+	private static final String UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	private static final String LOWER = "abcdefghijklmnopqrstuvwxyz";
+	private static final String DIGITS = "0123456789";
+	private static final String SPECIAL = "@$!%*?&";
+
+	private static final String ALL_CHARS = UPPER + LOWER + DIGITS + SPECIAL;
+	private static final SecureRandom random = new SecureRandom();
+
 	@Override
 	public LoginResp completeProfile(OAuthProfileCompletion profileData, String token) throws Exception {
 		String email = jwtService.extractUserName(token);
@@ -46,8 +55,12 @@ public class OAuthServiceImpl implements OAuthService {
 		user.setName(profileData.getName());
 		user.setRole("USER");
 
+//		if (user.getPassword() != null)
+//			System.err.println("Old password if available: " + user.getPassword());
+
 		if (user.getPassword() == null) {
-			String secureRandomPassword = generateSecurePassword();
+			String secureRandomPassword = generateSecurePassword(8);
+//			System.err.println("Generated Password: " + secureRandomPassword);
 			user.setPassword(encoder.encode(secureRandomPassword));
 		}
 
@@ -63,7 +76,41 @@ public class OAuthServiceImpl implements OAuthService {
 		return new LoginResp(profileData.getUsername(), newToken, "USER");
 	}
 
-	private String generateSecurePassword() {
-		return UUID.randomUUID().toString().substring(0, 12);
+//	private String generateSecurePassword() {
+//		return UUID.randomUUID().toString().substring(0, 12);
+//	}
+
+	public static String generateSecurePassword(int length) {
+		if (length < 8) {
+			throw new IllegalArgumentException("Password must be at least 8 characters long.");
+		}
+
+		StringBuilder password = new StringBuilder();
+
+		// Ensure each required character type is present
+		password.append(UPPER.charAt(random.nextInt(UPPER.length())));
+		password.append(LOWER.charAt(random.nextInt(LOWER.length())));
+		password.append(DIGITS.charAt(random.nextInt(DIGITS.length())));
+		password.append(SPECIAL.charAt(random.nextInt(SPECIAL.length())));
+
+		// Fill the rest with random characters from all categories
+		for (int i = 4; i < length; i++) {
+			password.append(ALL_CHARS.charAt(random.nextInt(ALL_CHARS.length())));
+		}
+
+		// Shuffle the characters to avoid predictable order
+		return shuffleString(password.toString());
+	}
+
+	private static String shuffleString(String input) {
+		char[] characters = input.toCharArray();
+		for (int i = characters.length - 1; i > 0; i--) {
+			int index = random.nextInt(i + 1);
+			// Simple swap
+			char temp = characters[i];
+			characters[i] = characters[index];
+			characters[index] = temp;
+		}
+		return new String(characters);
 	}
 }

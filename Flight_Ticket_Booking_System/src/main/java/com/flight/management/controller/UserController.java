@@ -1,6 +1,7 @@
 package com.flight.management.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.flight.management.proxy.LoginReq;
@@ -67,6 +69,31 @@ public class UserController {
 			return new ResponseEntity<>(
 					new Response("No data found to display currently!!", HttpStatus.NOT_FOUND.toString()),
 					HttpStatus.NOT_FOUND);
+	}
+
+	@GetMapping("/get-users-paginated")
+	public ResponseEntity<?> getUsersPaginated(@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "10") int size, @RequestParam(required = false) String sortField,
+			@RequestParam(defaultValue = "asc") String sortDirection) {
+
+		try {
+			Map<String, Object> response = service.getUsersPaginated(page, size, sortField, sortDirection);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(new Response("Error fetching paginated users: " + e.getMessage(),
+					HttpStatus.INTERNAL_SERVER_ERROR.toString()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@GetMapping("/get-total-users-count")
+	public ResponseEntity<?> getTotalUsersCount() {
+		try {
+			long count = service.getTotalUsersCount();
+			return new ResponseEntity<>(count, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(new Response("Error fetching users count: " + e.getMessage(),
+					HttpStatus.INTERNAL_SERVER_ERROR.toString()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@GetMapping("/get-user-by-username/{username}")

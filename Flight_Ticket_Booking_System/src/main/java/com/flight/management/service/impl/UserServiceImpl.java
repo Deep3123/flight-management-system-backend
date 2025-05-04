@@ -5,12 +5,17 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -297,5 +302,46 @@ public class UserServiceImpl implements UserService {
 			return "We couldn't log you in. Your account may have been deleted, or you might not be logged in. Please try again. If the issue persists, consider creating a new account.";
 		}
 		return "Success.";
+	}
+
+	@Override
+	public Map<String, Object> getUsersPaginated(int page, int size, String sortField, String sortDirection) {
+		try {
+			// Create pageable object
+			Pageable pageable;
+			if (sortField != null && !sortField.isEmpty()) {
+				Sort sort = sortDirection.equalsIgnoreCase("asc") ? Sort.by(sortField).ascending()
+						: Sort.by(sortField).descending();
+				pageable = PageRequest.of(page, size, sort);
+			} else {
+				pageable = PageRequest.of(page, size);
+			}
+
+			// Get paginated data
+			Page<UserEntity> pageResult = repo.findAll(pageable);
+
+			// Map to DTOs
+			List<UserProxy> users = MapperUtil.convertListofValue(pageResult.getContent(), UserProxy.class);
+
+			// Create response with pagination metadata
+			Map<String, Object> response = new HashMap<>();
+			response.put("users", users);
+			response.put("currentPage", pageResult.getNumber());
+			response.put("totalItems", pageResult.getTotalElements());
+			response.put("totalPages", pageResult.getTotalPages());
+
+			return response;
+		} catch (Exception e) {
+			throw new RuntimeException("Error fetching paginated users: " + e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public long getTotalUsersCount() {
+		try {
+			return repo.count();
+		} catch (Exception e) {
+			throw new RuntimeException("Error fetching users count: " + e.getMessage(), e);
+		}
 	}
 }

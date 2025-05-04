@@ -324,6 +324,114 @@ import com.flight.management.util.JwtService;
 import java.io.IOException;
 import java.util.Map;
 
+//@Component
+//public class OAuth2AuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+//	@Autowired
+//	private JwtService jwtService;
+//
+//	@Value("${app.frontend.url.local}")
+//	private String localFrontendUrl;
+//
+//	@Value("${app.frontend.url.prod}")
+//	private String prodFrontendUrl;
+//
+//	@Autowired
+//	private HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository;
+//
+//	// Helper method to determine frontend URL based on request origin
+//	private String getFrontendBaseUrl(HttpServletRequest request) {
+////		String origin = request.getHeader("Origin");
+////		String referer = request.getHeader("Referer");
+////
+////		System.err.println("Origin: " + origin);
+////		System.err.println("Referer: " + referer);
+////		
+////		
+////		if ((origin != null && origin.contains("localhost")) || (referer != null && referer.contains("localhost"))) {
+////			return localFrontendUrl;
+////		}
+////		return prodFrontendUrl;
+//
+//		String state = request.getParameter("state");
+//		System.err.println("State: " + state);
+//		if ("local".equals(state)) {
+//			return localFrontendUrl;
+//		}
+//		return prodFrontendUrl;
+//	}
+//
+//	@Override
+//	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+//			Authentication authentication) throws IOException, ServletException {
+//		if (!(authentication instanceof OAuth2AuthenticationToken)) {
+//			super.onAuthenticationSuccess(request, response, authentication);
+//			return;
+//		}
+//
+//		OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+//		OAuth2User oauth2User = oauthToken.getPrincipal();
+//		Map<String, Object> attributes = oauth2User.getAttributes();
+//
+//		// Extract user information
+//		String email = getAttributeAsString(attributes, "email");
+//		String name = getAttributeAsString(attributes, "name");
+//
+//		// Check if email exists
+//		if (email == null || email.isEmpty()) {
+//			handleAuthenticationFailure(request, response, "Missing email information");
+//			return;
+//		}
+//
+//		// Generate JWT token
+//		String token = jwtService.generateToken(email);
+//
+//		// Check if user profile needs completion (this could be determined by your user
+//		// service)
+//		boolean requiresProfileCompletion = determineIfProfileCompletionRequired(email);
+//
+//		// Get frontend URL for redirection
+//		String frontendBaseUrl = getFrontendBaseUrl(request);
+//
+//		// Build redirect URL with token
+//		String redirectUrl = UriComponentsBuilder.fromUriString(frontendBaseUrl + "/complete-profile")
+//				.queryParam("token", token).queryParam("requiresProfileCompletion", requiresProfileCompletion)
+//				.queryParam("email", email).queryParam("name", name).build().toUriString();
+//
+//		// Clean up cookies
+//		cookieAuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
+//
+//		// Redirect to frontend
+//		getRedirectStrategy().sendRedirect(request, response, redirectUrl);
+//	}
+//
+//	private void handleAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, String reason)
+//			throws IOException {
+//		String frontendBaseUrl = getFrontendBaseUrl(request);
+//		String redirectUrl = UriComponentsBuilder.fromUriString(frontendBaseUrl + "/oauth-callback")
+//				.queryParam("error", "authentication_failure").queryParam("error_description", reason).build()
+//				.toUriString();
+//
+//		cookieAuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
+//		getRedirectStrategy().sendRedirect(request, response, redirectUrl);
+//	}
+//
+//	// Helper method to check if user profile needs completion
+//	private boolean determineIfProfileCompletionRequired(String email) {
+//		// Implementation depends on your user service
+//		// Example:
+//		// return userService.isProfileIncomplete(email);
+//
+//		// For now, returning a placeholder
+//		return false; // Change this based on your actual implementation
+//	}
+//
+//	// Helper methods for safer attribute access
+//	private String getAttributeAsString(Map<String, Object> attributes, String key) {
+//		Object value = attributes.get(key);
+//		return value instanceof String ? (String) value : null;
+//	}
+//}
+
 @Component
 public class OAuth2AuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 	@Autowired
@@ -338,14 +446,29 @@ public class OAuth2AuthSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 	@Autowired
 	private HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository;
 
-	// Helper method to determine frontend URL based on request origin
+	// Improved method to determine frontend URL based on request state
 	private String getFrontendBaseUrl(HttpServletRequest request) {
-		String origin = request.getHeader("Origin");
-		String referer = request.getHeader("Referer");
+		// First check the state parameter from OAuth flow
+		String state = request.getParameter("state");
+		System.err.println("State parameter: " + state);
 
-		if ((origin != null && origin.contains("localhost")) || (referer != null && referer.contains("localhost"))) {
+		// Also check for env parameter in the request attributes
+		// (This would be set by our CustomAuthorizationRequestResolver)
+		Object envAttribute = request.getAttribute("env");
+		String env = envAttribute != null ? envAttribute.toString() : null;
+		System.err.println("Env attribute: " + env);
+
+		// Use state parameter first, then fall back to env attribute
+		String environment = state != null ? state : env;
+
+		// If we have a valid "local" environment indicator, use local URL
+		if ("local".equals(environment)) {
+			System.err.println("Redirecting to local frontend: " + localFrontendUrl);
 			return localFrontendUrl;
 		}
+
+		// Default to production URL
+		System.err.println("Redirecting to production frontend: " + prodFrontendUrl);
 		return prodFrontendUrl;
 	}
 
@@ -365,6 +488,9 @@ public class OAuth2AuthSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 		String email = getAttributeAsString(attributes, "email");
 		String name = getAttributeAsString(attributes, "name");
 
+		// Log the attributes for debugging
+		System.err.println("OAuth2 User Attributes: " + attributes);
+
 		// Check if email exists
 		if (email == null || email.isEmpty()) {
 			handleAuthenticationFailure(request, response, "Missing email information");
@@ -374,8 +500,7 @@ public class OAuth2AuthSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 		// Generate JWT token
 		String token = jwtService.generateToken(email);
 
-		// Check if user profile needs completion (this could be determined by your user
-		// service)
+		// Check if user profile needs completion
 		boolean requiresProfileCompletion = determineIfProfileCompletionRequired(email);
 
 		// Get frontend URL for redirection
@@ -385,6 +510,8 @@ public class OAuth2AuthSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 		String redirectUrl = UriComponentsBuilder.fromUriString(frontendBaseUrl + "/complete-profile")
 				.queryParam("token", token).queryParam("requiresProfileCompletion", requiresProfileCompletion)
 				.queryParam("email", email).queryParam("name", name).build().toUriString();
+
+		System.err.println("Final redirect URL: " + redirectUrl);
 
 		// Clean up cookies
 		cookieAuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
@@ -407,9 +534,6 @@ public class OAuth2AuthSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 	// Helper method to check if user profile needs completion
 	private boolean determineIfProfileCompletionRequired(String email) {
 		// Implementation depends on your user service
-		// Example:
-		// return userService.isProfileIncomplete(email);
-
 		// For now, returning a placeholder
 		return false; // Change this based on your actual implementation
 	}

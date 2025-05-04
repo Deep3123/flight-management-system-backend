@@ -85,7 +85,6 @@
 package com.flight.management.configuration;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -100,12 +99,16 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
-import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
-import org.springframework.session.web.http.HttpSessionIdResolver;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -297,6 +300,9 @@ public class SecurityConfig {
 	@Autowired
 	private CustomOAuth2UserService oAuth2UserService;
 
+//	@Autowired
+//	private CustomAuthorizationRequestResolver customAuthorizationRequestResolver;
+
 	@Lazy
 	@Autowired
 	private OAuth2AuthSuccessHandler oAuth2AuthSuccessHandler;
@@ -306,6 +312,25 @@ public class SecurityConfig {
 	public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
 		return new HttpCookieOAuth2AuthorizationRequestRepository();
 	}
+
+	// Inject necessary services like ClientRegistrationRepository
+//	@Lazy
+//	@Autowired
+//	private ClientRegistrationRepository clientRegistrationRepository;
+//
+//	@Bean
+//	public ClientRegistrationRepository clientRegistrationRepository() {
+//		return new InMemoryClientRegistrationRepository(clientRegistrations());
+//	}
+//
+//	private ClientRegistration clientRegistrations() {
+//		return ClientRegistration.withRegistrationId("google").clientId("YOUR_CLIENT_ID")
+//				.clientSecret("YOUR_CLIENT_SECRET").scope("openid", "profile", "email")
+//				.authorizationUri("https://accounts.google.com/o/oauth2/auth")
+//				.tokenUri("https://oauth2.googleapis.com/token")
+//				.userInfoUri("https://www.googleapis.com/oauth2/v3/userinfo")
+//				.redirectUri("{baseUrl}/login/oauth2/code/{registrationId}").build();
+//	}
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -331,6 +356,56 @@ public class SecurityConfig {
 
 		return http.build();
 	}
+
+//	@Bean
+//	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//		http.csrf(csrf -> csrf.disable()).cors(cors -> cors.configurationSource(corsConfigurationSource()))
+//				.authorizeHttpRequests(auth -> auth
+//						.requestMatchers("/user/register", "/user/login", "/user/forgot-password",
+//								"/user/reset-password/**", "/captcha", "/oauth/complete-profile", "/login",
+//								"/oauth2/authorization/**", "/login/oauth2/code/**")
+//						.permitAll()
+//						.requestMatchers("/user/get-all-user-details", "/flight/add-flight-details",
+//								"/flight/update-flight-details", "/flight/delete-flight-details/**",
+//								"/flight/get-all-flights-details", "/flight/get-flights-details-by-flight-number/**",
+//								"/contact/get-all-contact-us-details", "/contact/get-all-contact-us-details-by-name/**")
+//						.hasAuthority("ADMIN").anyRequest().authenticated())
+//				.oauth2Login(oauth2 -> oauth2
+//						.authorizationEndpoint(authorization -> authorization.baseUri("/oauth2/authorization")
+//								.authorizationRequestResolver(customAuthorizationRequestResolver())
+//								.authorizationRequestRepository(cookieAuthorizationRequestRepository()))
+//						.redirectionEndpoint(redirection -> redirection.baseUri("/login/oauth2/code/*"))
+//						.userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+//						.successHandler(oAuth2AuthSuccessHandler))
+//				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+//				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+//
+//		return http.build();
+//	}
+//
+//	@Bean
+//	public CustomAuthorizationRequestResolver customAuthorizationRequestResolver() {
+//		return new CustomAuthorizationRequestResolver(clientRegistrationRepository(), "/oauth2/authorization");
+//	}
+//
+//	@Bean
+//	public ClientRegistrationRepository clientRegistrationRepository() {
+//		return new InMemoryClientRegistrationRepository(Arrays.asList(
+//				// Your client registrations - Google, etc.
+//				// You can move your client details to application properties and load from
+//				// there
+//				ClientRegistration.withRegistrationId("google")
+//						.clientId("${spring.security.oauth2.client.registration.google.client-id}")
+//						.clientSecret("${spring.security.oauth2.client.registration.google.client-secret}")
+//						.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+//						.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+//						.redirectUri("{baseUrl}/login/oauth2/code/{registrationId}").scope("openid", "profile", "email")
+//						.authorizationUri("https://accounts.google.com/o/oauth2/v2/auth")
+//						.tokenUri("https://www.googleapis.com/oauth2/v4/token")
+//						.userInfoUri("https://www.googleapis.com/oauth2/v3/userinfo")
+//						.userNameAttributeName(IdTokenClaimNames.SUB)
+//						.jwkSetUri("https://www.googleapis.com/oauth2/v3/certs").clientName("Google").build()));
+//	}
 
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
