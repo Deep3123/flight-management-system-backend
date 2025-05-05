@@ -87,6 +87,7 @@ package com.flight.management.configuration;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -303,6 +304,12 @@ public class SecurityConfig {
 //	@Autowired
 //	private CustomAuthorizationRequestResolver customAuthorizationRequestResolver;
 
+	@Value("${spring.security.oauth2.client.registration.google.client-id}")
+	private String clientId;
+
+	@Value("${spring.security.oauth2.client.registration.google.client-secret}")
+	private String clientSecretId;
+
 	@Lazy
 	@Autowired
 	private OAuth2AuthSuccessHandler oAuth2AuthSuccessHandler;
@@ -394,9 +401,7 @@ public class SecurityConfig {
 				// Your client registrations - Google, etc.
 				// You can move your client details to application properties and load from
 				// there
-				ClientRegistration.withRegistrationId("google")
-						.clientId("${spring.security.oauth2.client.registration.google.client-id}")
-						.clientSecret("${spring.security.oauth2.client.registration.google.client-secret}")
+				ClientRegistration.withRegistrationId("google").clientId(clientId).clientSecret(clientSecretId)
 						.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
 						.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 						.redirectUri("{baseUrl}/login/oauth2/code/{registrationId}").scope("openid", "profile", "email")
