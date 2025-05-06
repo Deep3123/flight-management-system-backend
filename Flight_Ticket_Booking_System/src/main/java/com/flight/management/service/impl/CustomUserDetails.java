@@ -12,31 +12,32 @@ import com.flight.management.domain.UserEntity;
 //@Component
 public class CustomUserDetails implements UserDetails {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private final UserEntity user;
+	private final UserEntity user;
 
-    // This constructor gets the UserEntity object
-    public CustomUserDetails(UserEntity user) {
-        this.user = user;
-    }
+	// This constructor gets the UserEntity object
+	public CustomUserDetails(UserEntity user) {
+		this.user = user;
+	}
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(user.getRole()));
-    }
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return Collections.singleton(new SimpleGrantedAuthority(user.getRole()));
+	}
 
-    @Override
-    public String getPassword() {
-        return user.getPassword();
-    }
+	@Override
+	public String getPassword() {
+		return user.getPassword();
+	}
 
-    @Override
-    public String getUsername() {
-        return user.getUsername();
-    }
+	@Override
+	public String getUsername() {
+//        return user.getUsername();
+		return user.getEmailId();
+	}
 
-    // Other required methods can be implemented
+	// Other required methods can be implemented
 //    @Override
 //    public boolean isAccountNonExpired() {
 //        return true; // You can adjust this based on your requirements

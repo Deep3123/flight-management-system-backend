@@ -64,14 +64,14 @@
 //	}
 //}
 
-
-
-
 package com.flight.management.util;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.apache.commons.text.WordUtils;
+
 import com.flight.management.proxy.PassengerProxy;
 import com.flight.management.proxy.TicketProxy;
 import com.itextpdf.text.BaseColor;
@@ -206,7 +206,8 @@ public class PDFGenerator {
 				fromCell.setPadding(5);
 
 				Paragraph fromLabel = new Paragraph("FROM", smallFont);
-				Paragraph fromValue = new Paragraph(ticketProxy.getFlight().getDepartureAirport(), accentFont);
+				Paragraph fromValue = new Paragraph(
+						WordUtils.capitalizeFully(ticketProxy.getFlight().getDepartureAirport()), accentFont);
 				fromValue.setFont(FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, ACCENT_COLOR));
 
 				fromCell.addElement(fromLabel);
@@ -227,7 +228,8 @@ public class PDFGenerator {
 				toCell.setPadding(5);
 
 				Paragraph toLabel = new Paragraph("TO", smallFont);
-				Paragraph toValue = new Paragraph(ticketProxy.getFlight().getArrivalAirport(), accentFont);
+				Paragraph toValue = new Paragraph(
+						WordUtils.capitalizeFully(ticketProxy.getFlight().getArrivalAirport()), accentFont);
 				toValue.setFont(FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, ACCENT_COLOR));
 
 				toCell.addElement(toLabel);
@@ -285,8 +287,7 @@ public class PDFGenerator {
 				PdfPCell nameCell = createLabelValueCell("PASSENGER",
 						passenger.getFirstName() + " " + passenger.getLastName(), smallFont, boldFont);
 				passengerTable.addCell(nameCell);
-				
-				
+
 				// Seat number (simulated for this example)
 				String seatNumber = generateRandomSeat();
 				PdfPCell seatCell = createLabelValueCell("SEAT", seatNumber, smallFont, boldFont);
@@ -383,9 +384,6 @@ public class PDFGenerator {
 		return sb.toString();
 	}
 }
-
-
-
 
 //package com.flight.management.util;
 //
@@ -855,11 +853,6 @@ public class PDFGenerator {
 //		return "ECONOMY";
 //	}
 //}
-
-
-
-
-
 
 //package com.flight.management.util;
 //

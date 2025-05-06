@@ -7,6 +7,9 @@ import java.util.function.Function;
 import javax.crypto.SecretKey;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+
+import com.flight.management.service.impl.CustomUserDetails;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -77,12 +80,22 @@ public class JwtService {
 
 	// 8. Validates the JWT token against the UserDetails.
 	// return-> True if the token is valid, false otherwise.
-	public Boolean validateToken(String token, UserDetails userDetails) {
-		// Extract username from token and check if it matches UserDetails' username
-		final String userName = extractUserName(token);
-		// Also check if the token is expired
-		return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
+//	public Boolean validateToken(String token, UserDetails userDetails) {
+//		// Extract username from token and check if it matches UserDetails' username
+//		final String userName = extractUserName(token);
+//		// Also check if the token is expired
+//		return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
+//	}
 
+	public Boolean validateToken(String token, UserDetails userDetails) {
+		final String email = extractUserName(token);
+
+		// Get username (which is now email) directly from UserDetails
+		String userEmail = userDetails.getUsername();
+//		System.err.println("Token email: " + email);
+//		System.err.println("UserDetails email: " + userEmail);
+
+		return (email.equals(userEmail) && !isTokenExpired(token));
 	}
 
 	public String getTokenFromRequest(HttpServletRequest request) {

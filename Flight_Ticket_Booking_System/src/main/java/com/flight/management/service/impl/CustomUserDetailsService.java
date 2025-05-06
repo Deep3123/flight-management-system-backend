@@ -17,15 +17,43 @@ public class CustomUserDetailsService implements UserDetailsService {
 	@Autowired
 	private UserRepo repo;
 
+//	@Override
+//	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//		// TODO Auto-generated method stub
+//		Optional<UserEntity> user = repo.findByUsername(username);
+//
+//		if (user.isEmpty())
+//			throw new UsernameNotFoundException("User not found with given username, please verify the username!!");
+//
+//		return new CustomUserDetails(user.get());
+//	}
+
+//	@Override
+//	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+//		// TODO Auto-generated method stub
+//		Optional<UserEntity> user = repo.findByEmailId(email);
+//
+//		if (user.isEmpty())
+//			throw new UsernameNotFoundException("User not found with given username, please verify the username!!");
+//
+//		return new CustomUserDetails(user.get());
+//	}
+
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		// TODO Auto-generated method stub
-		Optional<UserEntity> user = repo.findByUsername(username);
+	public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
+		// Try to find by email first (for OAuth flow)
+		Optional<UserEntity> user = repo.findByEmailId(usernameOrEmail);
 
-		if (user.isEmpty())
-			throw new UsernameNotFoundException("User not found with given username, please verify the username!!");
+		// If not found by email, try by username (for regular login)
+		if (user.isEmpty()) {
+			user = repo.findByUsername(usernameOrEmail);
+		}
 
+		if (user.isEmpty()) {
+			throw new UsernameNotFoundException("User not found with given identifier: " + usernameOrEmail);
+		}
+
+		// Return CustomUserDetails with email as username
 		return new CustomUserDetails(user.get());
 	}
-
 }

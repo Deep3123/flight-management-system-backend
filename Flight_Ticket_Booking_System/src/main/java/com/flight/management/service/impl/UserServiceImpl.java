@@ -167,8 +167,11 @@ public class UserServiceImpl implements UserService {
 
 			Optional<UserEntity> user = repo.findByUsername(req.getUsername());
 
-			if (authenticate.isAuthenticated()) {
-				return new LoginResp(req.getUsername(), jwtService.generateToken(req.getUsername()),
+			if (authenticate.isAuthenticated() && user.isPresent()) {
+//				return new LoginResp(req.getUsername(), jwtService.generateToken(req.getUsername()),
+//						user.get().getRole());
+
+				return new LoginResp(req.getUsername(), jwtService.generateToken(user.get().getEmailId()),
 						user.get().getRole());
 			}
 		} catch (Exception e) {
