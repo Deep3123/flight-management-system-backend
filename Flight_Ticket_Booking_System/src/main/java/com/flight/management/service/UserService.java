@@ -3,10 +3,7 @@ package com.flight.management.service;
 import java.util.List;
 import java.util.Map;
 
-import com.flight.management.proxy.LoginReq;
-import com.flight.management.proxy.LoginResp;
-import com.flight.management.proxy.ResetPassword;
-import com.flight.management.proxy.UserProxy;
+import com.flight.management.proxy.*;
 
 public interface UserService {
 	public String saveUserDetails(UserProxy userProxy);
@@ -30,4 +27,6 @@ public interface UserService {
 	public Map<String, Object> getUsersPaginated(int page, int size, String sortField, String sortDirection);
 
 	public long getTotalUsersCount();
+
+    public Response downloadAllUserData();
 }

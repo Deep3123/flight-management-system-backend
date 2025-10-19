@@ -110,6 +110,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
+import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
+import org.springframework.session.web.http.HttpSessionIdResolver;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -385,7 +387,7 @@ public class SecurityConfig {
 						.userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
 						.successHandler(oAuth2AuthSuccessHandler))
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+				.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 
 		return http.build();
 	}
@@ -436,6 +438,11 @@ public class SecurityConfig {
 		serializer.setCookiePath("/");
 		serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
 		return serializer;
+	}
+
+	@Bean
+	public HttpSessionIdResolver httpSessionIdResolver() {
+		return HeaderHttpSessionIdResolver.xAuthToken();
 	}
 
 	@Bean

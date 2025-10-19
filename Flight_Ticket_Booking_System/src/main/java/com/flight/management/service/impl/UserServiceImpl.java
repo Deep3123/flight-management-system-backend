@@ -1,5 +1,6 @@
 package com.flight.management.service.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -10,12 +11,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.flight.management.proxy.*;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,18 +30,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.flight.management.domain.UserEntity;
-import com.flight.management.proxy.LoginReq;
-import com.flight.management.proxy.LoginResp;
-import com.flight.management.proxy.ResetPassword;
-import com.flight.management.proxy.UserProxy;
 import com.flight.management.repo.UserRepo;
 import com.flight.management.service.UserService;
 import com.flight.management.util.JwtService;
 import com.flight.management.util.MapperUtil;
 
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
 	@Autowired
@@ -123,6 +126,12 @@ public class UserServiceImpl implements UserService {
 					flag = true;
 				user.get().setMobileNo(userProxy.getMobileNo());
 			}
+
+            if (userProxy.getRole() != null) {
+                if (userProxy.getRole() != user.get().getRole())
+                    flag = true;
+                user.get().setRole(userProxy.getRole());
+            }
 
 //			if (userProxy.getPassword() != null)
 //				user.get().setPassword(encoder.encode(userProxy.getPassword()));
@@ -347,4 +356,57 @@ public class UserServiceImpl implements UserService {
 			throw new RuntimeException("Error fetching users count: " + e.getMessage(), e);
 		}
 	}
+
+	@Override
+	public Response downloadAllUserData() {
+		try {
+            log.info("Entry into downloadAllUserData()");
+
+			List<UserEntity> users = repo.findAll();
+			SXSSFWorkbook workbook = new SXSSFWorkbook(100);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+			Sheet sheet = workbook.createSheet("Users");
+			Row headerRow = sheet.createRow(0);
+
+            CellStyle headerStyle = workbook.createCellStyle();
+            Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerFont.setFontHeightInPoints((short) 12);
+            headerStyle.setFont(headerFont);
+
+            String[] headers = {"Sr. No.", "Username", "Name", "Email", "Mobile", "Role", "Created At", "Updated At"};
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle(headerStyle);
+            }
+
+			int rowNum = 1;
+			for (UserEntity user : users) {
+				Row row = sheet.createRow(rowNum);
+                row.createCell(0).setCellValue(rowNum);
+				row.createCell(1).setCellValue(user.getUsername());
+				row.createCell(2).setCellValue(user.getName());
+				row.createCell(3).setCellValue(user.getEmailId());
+				row.createCell(4).setCellValue(user.getMobileNo());
+				row.createCell(5).setCellValue(user.getRole());
+				row.createCell(6).setCellValue(user.getCreatedAt().toString());
+				row.createCell(7).setCellValue(user.getUpdatedAt().toString());
+                rowNum++;
+			}
+
+			workbook.write(outputStream);
+			workbook.close();
+
+            log.info("Excel file downloaded successfully for all user data !!");
+
+			return Response.builder().data(outputStream.toByteArray()).message("All user data downloaded successfully !")
+                    .status_code(HttpStatus.OK.toString()).build();
+        } catch (Exception e) {
+            log.error("Error generating excel: {}", e.getMessage(), e);
+            return Response.builder().message("Error generating excel file")
+                    .status_code(HttpStatus.INTERNAL_SERVER_ERROR.toString()).build();
+        }
+    }
 }

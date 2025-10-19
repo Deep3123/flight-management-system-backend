@@ -244,4 +244,15 @@ public class UserController {
 
 		return new ResponseEntity<>(new Response(s, HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
 	}
+
+    @GetMapping("/download-all-user-data")
+    public ResponseEntity<?> downloadAllUserData() {
+        Response resp = service.downloadAllUserData();
+
+        if (resp.getStatus_code().equals(HttpStatus.OK.toString())) {
+            return new ResponseEntity<>(resp, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(resp, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
