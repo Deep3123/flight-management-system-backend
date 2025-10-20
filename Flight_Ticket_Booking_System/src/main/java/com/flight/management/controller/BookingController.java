@@ -106,4 +106,15 @@ public class BookingController {
 					"Either booking details not found or there is an error generated during deletion of booking details.",
 					HttpStatus.BAD_REQUEST.toString()), HttpStatus.BAD_REQUEST);
 	}
+
+    @GetMapping("/download-all-booking-data")
+    public ResponseEntity<?> downloadAllBookingData() {
+        Response resp = bookingService.downloadAllBookingData();
+
+        if (resp.getStatus_code().equals(HttpStatus.OK.toString())) {
+            return new ResponseEntity<>(resp, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(resp, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

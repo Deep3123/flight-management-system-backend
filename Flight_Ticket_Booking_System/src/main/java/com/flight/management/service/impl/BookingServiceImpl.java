@@ -1,12 +1,20 @@
 package com.flight.management.service.impl;
 
+import java.io.ByteArrayOutputStream;
+import java.text.NumberFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.flight.management.proxy.Response;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -31,6 +39,7 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.util.ByteArrayDataSource;
 
 @Service
+@Slf4j
 public class BookingServiceImpl implements BookingService {
 	@Value("${rzp_key_id}")
 	private String razorpayKey;
@@ -53,7 +62,9 @@ public class BookingServiceImpl implements BookingService {
 	@Value("${spring.mail.username}")
 	private String sender;
 
-	@Override
+    NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("en", "IN"));
+
+    @Override
 	public boolean verifyPayment(String paymentId) throws Exception {
 		RazorpayClient razorpay = new RazorpayClient(razorpayKey, razorpaySecret);
 		Payment payment = razorpay.payments.fetch(paymentId);
@@ -235,4 +246,59 @@ public class BookingServiceImpl implements BookingService {
 		}
 		return null;
 	}
+
+    @Override
+    public Response downloadAllBookingData() {
+        try {
+            log.info("Entry into downloadAllBookingData()");
+
+            List<BookingEntity> bookings = bookingRepo.findAll();
+            SXSSFWorkbook workbook = new SXSSFWorkbook(100);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+            Sheet sheet = workbook.createSheet("Bookings");
+            Row headerRow = sheet.createRow(0);
+
+            CellStyle headerStyle = workbook.createCellStyle();
+            Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerFont.setFontHeightInPoints((short) 12);
+            headerStyle.setFont(headerFont);
+
+            String[] headers = {"Sr. No.", "Booking ID", "Payment ID", "Flight ID", "Passenger Name", "Passenger Email", "Passenger Mobile", "Amount", "Seat Count", "Booking Date"};
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle(headerStyle);
+            }
+
+            int rowNum = 1;
+            for (BookingEntity booking : bookings) {
+                Row row = sheet.createRow(rowNum);
+                row.createCell(0).setCellValue(rowNum);
+                row.createCell(1).setCellValue(booking.getId());
+                row.createCell(2).setCellValue(booking.getPaymentId());
+                row.createCell(3).setCellValue(booking.getFlightId());
+                row.createCell(4).setCellValue(booking.getPassenger().getFirstName() + " " + booking.getPassenger().getLastName());
+                row.createCell(5).setCellValue(booking.getPassenger().getEmail());
+                row.createCell(6).setCellValue(booking.getPassenger().getCountryCode() + " " + booking.getPassenger().getMobile());
+                row.createCell(7).setCellValue(currencyFormatter.format(booking.getAmount()));
+                row.createCell(8).setCellValue(booking.getCount());
+                row.createCell(9).setCellValue(booking.getBookingDate().toString());
+                rowNum++;
+            }
+
+            workbook.write(outputStream);
+            workbook.close();
+
+            log.info("Excel file downloaded successfully for all booking data !!");
+
+            return Response.builder().data(outputStream.toByteArray()).message("All booking data downloaded successfully !")
+                    .status_code(HttpStatus.OK.toString()).build();
+        } catch (Exception e) {
+            log.error("Error generating excel: {}", e.getMessage(), e);
+            return Response.builder().message("Error generating excel file")
+                    .status_code(HttpStatus.INTERNAL_SERVER_ERROR.toString()).build();
+        }
+    }
 }

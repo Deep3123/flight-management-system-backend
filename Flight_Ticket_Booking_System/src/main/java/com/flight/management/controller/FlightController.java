@@ -139,4 +139,14 @@ public class FlightController {
 					HttpStatus.NOT_FOUND);
 	}
 
+    @GetMapping("/download-all-flight-data")
+    public ResponseEntity<?> downloadAllFlightData() {
+        Response resp = service.downloadAllFlightData();
+
+        if (resp.getStatus_code().equals(HttpStatus.OK.toString())) {
+            return new ResponseEntity<>(resp, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(resp, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
