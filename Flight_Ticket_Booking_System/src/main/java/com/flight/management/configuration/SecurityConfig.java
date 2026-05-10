@@ -372,7 +372,7 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/user/register", "/user/login", "/user/forgot-password",
 								"/user/reset-password/**", "/captcha", "/oauth/complete-profile", "/login",
-								"/oauth2/authorization/**", "/login/oauth2/code/**")
+								"/oauth2/authorization/**", "/login/oauth2/code/**", "/api/chat", "/api/keep-alive")
 						.permitAll()
 						.requestMatchers("/user/get-all-user-details", "/flight/add-flight-details",
 								"/flight/update-flight-details", "/flight/delete-flight-details/**",
