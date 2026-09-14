@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.flight.management.domain.FlightEntity;
@@ -21,10 +22,11 @@ public class FlightDataResetService {
     private MongoTemplate mongoTemplate;
 
     /**
-     * This method can be called to reset all flight data.
+     * This scheduled task runs every day at 11:55 PM IST.
      * It uses a bulk update query to set departure and arrival dates to tomorrow,
      * and resets the available seats.
      */
+    @Scheduled(cron = "0 55 23 * * ?", zone = "Asia/Kolkata")
     public void resetFlightData() {
         log.info("Starting flight data reset scheduled task via bulk update...");
 
