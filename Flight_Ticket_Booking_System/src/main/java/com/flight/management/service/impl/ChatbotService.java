@@ -4,6 +4,8 @@ import com.flight.management.repo.FlightRepo;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
+import reactor.core.publisher.Flux;
+
 @Service
 public class ChatbotService {
 
@@ -15,7 +17,7 @@ public class ChatbotService {
         this.flightRepo = flightRepo;
     }
 
-    public String chat(String userMessage) {
+    public Flux<String> chatStream(String userMessage) {
         String systemPrompt = """
             You are a helpful and professional customer service assistant for JetWayz Flight Management System.
             
@@ -33,7 +35,7 @@ public class ChatbotService {
                 .system(systemPrompt)
                 .user(userMessage)
                 .functions("flightSearchTool", "bookingLookupTool")
-                .call()
+                .stream()
                 .content();
     }
 }

@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.http.MediaType;
+import reactor.core.publisher.Flux;
+
 @RestController
 @RequestMapping("/api/chat")
 @RequiredArgsConstructor
@@ -14,9 +17,8 @@ public class ChatbotController {
 
     private final ChatbotService chatbotService;
 
-    @PostMapping
-    public ResponseEntity<ChatResponse> chat(@RequestBody ChatRequest request) {
-        String response = chatbotService.chat(request.getMessage());
-        return ResponseEntity.ok(new ChatResponse(response));
+    @PostMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> chatStream(@RequestBody ChatRequest request) {
+        return chatbotService.chatStream(request.getMessage());
     }
 }
