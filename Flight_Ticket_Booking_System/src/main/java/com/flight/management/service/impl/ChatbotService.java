@@ -68,7 +68,8 @@ public class ChatbotService {
             CURRENT USER'S BOOKINGS DATA:
             %s
             
-            If the user asks about their booking status, use the data provided above to answer them.
+            If the user asks about their booking status or wants to see their bookings, use the data provided above to answer them.
+            Additionally, you MUST provide them with this link so they can view the full details: <a href="/my-bookings">My Bookings</a>
             """, isLoggedIn, currentUserEmail, bookingsData);
 
         return chatClient.prompt()

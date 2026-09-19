@@ -16,6 +16,8 @@ public interface BookingService {
 
 	public List<BookingDetails> getAllMergedBookings();
 
+	public List<BookingDetails> getMyMergedBookings(String email);
+
 	public String deleteBookingDetails(String paymentId);
 
     public Response downloadAllBookingData();

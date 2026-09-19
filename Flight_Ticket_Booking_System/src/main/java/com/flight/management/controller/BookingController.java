@@ -94,6 +94,19 @@ public class BookingController {
 					HttpStatus.NOT_FOUND);
 	}
 
+	@GetMapping("/my-bookings")
+	public ResponseEntity<?> getMyBookings() {
+		String currentUserEmail = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+		List<BookingDetails> list = bookingService.getMyMergedBookings(currentUserEmail);
+
+		if (list != null && !list.isEmpty())
+			return new ResponseEntity<>(list, HttpStatus.OK);
+		else
+			return new ResponseEntity<>(
+					new Response("No bookings found.", HttpStatus.NOT_FOUND.toString()),
+					HttpStatus.NOT_FOUND);
+	}
+
 	@PostMapping("/delete-booking-details")
 	public ResponseEntity<?> deleteBookingDetails(@Valid @RequestBody String paymentId) {
 		String s = bookingService.deleteBookingDetails(paymentId);
