@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.flight.management.proxy.Response;
-import com.flight.management.service.TicketEventProducer;
+//import com.flight.management.service.TicketEventProducer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -41,8 +41,8 @@ public class BookingServiceImpl implements BookingService {
 	@Value("${rzp_key_secret}")
 	private String razorpaySecret;
 
-	@Autowired
-	private TicketEventProducer ticketEventProducer;
+//	@Autowired
+//	private TicketEventProducer ticketEventProducer;
 
 	@Autowired
 	private JavaMailSender mailSender;
@@ -164,11 +164,35 @@ public class BookingServiceImpl implements BookingService {
 //		}
 //	}
 
+//	@Override
+//	public void generateTicket(TicketProxy ticketProxy) {
+//		log.info("Publishing ticket generation event for payment ID: {}", ticketProxy.getPaymentId());
+//		ticketEventProducer.publishTicketEvent(ticketProxy);
+//		log.info("Ticket generation event published successfully");
+//	}
+
 	@Override
 	public void generateTicket(TicketProxy ticketProxy) {
-		log.info("Publishing ticket generation event for payment ID: {}", ticketProxy.getPaymentId());
-		ticketEventProducer.publishTicketEvent(ticketProxy);
-		log.info("Ticket generation event published successfully");
+		try {
+			// 3. Generate PDF
+			byte[] pdfBytes = com.flight.management.util.PDFGenerator.generateTicketPDF(ticketProxy);
+
+			// 4. Send Email
+			jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
+			org.springframework.mail.javamail.MimeMessageHelper helper = new org.springframework.mail.javamail.MimeMessageHelper(message, true);
+			helper.setFrom(sender);
+			helper.setTo(ticketProxy.getPassengers().get(0).getEmail());
+			helper.setSubject("Your JetWayz Flight Ticket");
+			helper.setText(
+					"Thank you for choosing JetWayz! Your flight ticket is attached to this email. We wish you a pleasant journey.",
+					true);
+
+			jakarta.mail.util.ByteArrayDataSource dataSource = new jakarta.mail.util.ByteArrayDataSource(pdfBytes, "application/pdf");
+			helper.addAttachment("ticket.pdf", dataSource);
+			mailSender.send(message);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
