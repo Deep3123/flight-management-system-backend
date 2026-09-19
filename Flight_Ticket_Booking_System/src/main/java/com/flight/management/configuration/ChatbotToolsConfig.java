@@ -30,27 +30,4 @@ public class ChatbotToolsConfig {
         };
     }
 
-    public record BookingLookupRequest(String pnr) {}
-
-    @Bean
-    @Description("Lookup booking details for the currently logged-in user. Use this when the user asks about their bookings. It automatically enforces security so the AI does not need to ask for their email.")
-    public Function<BookingLookupRequest, List<BookingEntity>> bookingLookupTool(BookingRepo bookingRepo) {
-        return request -> {
-            String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-            
-            if (currentUserEmail == null || currentUserEmail.equals("anonymousUser")) {
-                // If not authenticated, return empty list
-                return List.of(); 
-            }
-
-            // Fetch all and filter by current user's email only (Security Enforcement)
-            List<BookingEntity> allBookings = bookingRepo.findAll();
-            return allBookings.stream()
-                    .filter(b -> b.getPassenger() != null && currentUserEmail.equalsIgnoreCase(b.getPassenger().getEmail()))
-                    .filter(b -> request.pnr() == null || request.pnr().isEmpty() || 
-                                 request.pnr().equals(b.getId()) || 
-                                 request.pnr().equals(b.getPaymentId()))
-                    .collect(Collectors.toList());
-        };
-    }
 }
