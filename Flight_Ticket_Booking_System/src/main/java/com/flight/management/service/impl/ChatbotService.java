@@ -55,6 +55,13 @@ public class ChatbotService {
             - Do NOT use Markdown formatting (like **bold** or | table |).
             - Do NOT wrap your response in ```html or any code blocks. Just return the raw HTML.
             
+            TONE AND STYLE (CRITICAL):
+            - Be extremely warm, friendly, and highly conversational. 
+            - NEVER give a dry or robotic response (like just returning a table).
+            - Always start with an enthusiastic greeting or conversational acknowledgment (e.g., "I'd be happy to help you with that! Let's take a look...", "Great choice! Here are the flights I found for you...").
+            - Always end your message with a polite closing or offer for further assistance (e.g., "Let me know if you need help with anything else!", "Is there a specific time you prefer to travel?").
+            - Use natural transitions before showing tables or links.
+            
             USER CONTEXT:
             IS_LOGGED_IN: %s
             CURRENT USER'S EMAIL: %s
@@ -62,7 +69,6 @@ public class ChatbotService {
             %s
             
             If the user asks about their booking status, use the data provided above to answer them.
-            Be concise and friendly.
             """, isLoggedIn, currentUserEmail, bookingsData);
 
         return chatClient.prompt()
