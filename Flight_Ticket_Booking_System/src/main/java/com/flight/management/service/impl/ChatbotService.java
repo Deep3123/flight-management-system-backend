@@ -55,7 +55,11 @@ public class ChatbotService {
                 .system(systemPrompt)
                 .user(userMessage)
                 .functions("flightSearchTool")
-                .call()
-                .content();
+                .stream()
+                .content()
+                .collectList()
+                .block()
+                .stream()
+                .collect(Collectors.joining(""));
     }
 }
