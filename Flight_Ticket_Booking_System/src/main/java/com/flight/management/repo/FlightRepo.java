@@ -34,7 +34,7 @@ public interface FlightRepo extends MongoRepository<FlightEntity, String> { // U
 //	List<FlightEntity> findByDepartureAirportAndArrivalAirportAndDepartureDateAndArrivalDateAndFlightClass(
 //			String departure, String arrival, Date departureDate, Date arrivalDate, String flightClass);
 
-	@Query("{ 'departureAirport': ?0, 'arrivalAirport': ?1, 'departureDate': { $gte: ?2, $lte: ?3 }, 'arrivalDate': { $gte: ?4, $lte: ?5 }, 'flightClass': ?6 }")
+	@Query("{ 'departureAirport': { $regex: ?0, $options: 'i' }, 'arrivalAirport': { $regex: ?1, $options: 'i' }, 'departureDate': { $gte: ?2, $lte: ?3 }, 'arrivalDate': { $gte: ?4, $lte: ?5 }, 'flightClass': { $regex: ?6, $options: 'i' } }")
 	List<FlightEntity> findFlightsInRange(String depAirport, String arrAirport, Date depStart, Date depEnd,
 			Date arrStart, Date arrEnd, String flightClass);
 
