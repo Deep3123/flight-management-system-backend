@@ -20,7 +20,7 @@ public class ChatbotService {
         this.bookingRepo = bookingRepo;
     }
 
-    public Flux<String> chatStream(String userMessage) {
+    public String chat(String userMessage) {
         String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         
         List<BookingEntity> userBookings = bookingRepo.findAll().stream()
@@ -55,7 +55,7 @@ public class ChatbotService {
                 .system(systemPrompt)
                 .user(userMessage)
                 .functions("flightSearchTool")
-                .stream()
+                .call()
                 .content();
     }
 }

@@ -17,8 +17,8 @@ public class ChatbotController {
 
     private final ChatbotService chatbotService;
 
-    @PostMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> chatStream(@RequestBody ChatRequest request) {
-        return chatbotService.chatStream(request.getMessage());
+    @PostMapping(produces = MediaType.TEXT_PLAIN_VALUE)
+    public String chat(@RequestBody ChatRequest request) {
+        return chatbotService.chat(request.getMessage());
     }
 }
