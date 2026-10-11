@@ -27,12 +27,11 @@ public class FlightSearchProxy {
 	@Pattern(regexp = "^[A-Za-z0-9\\s-]+$", message = "Arrival airport can only contain letters, numbers, spaces, and hyphens.")
 	private String arrivalAirport;
 
-//	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@FutureOrPresent(message = "Departure date must be today or in the future.")
+	@JsonFormat(timezone = "Asia/Kolkata")
 	@NotNull(message = "Departure date cannot be null.")
 	private Date departureDate;
 
-//	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(timezone = "Asia/Kolkata")
 	private Date arrivalDate;
 
 	@NotNull(message = "Person count cannot be null.")

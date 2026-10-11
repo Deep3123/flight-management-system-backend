@@ -209,16 +209,16 @@ public class FlightServiceImpl implements FlightService {
 			return null;
 		}
 
-		// Create start and end of day
-		Date depStart = Date.from(depLocalDate.atStartOfDay(zoneId).toInstant());
-		Date depEnd = Date.from(depLocalDate.atTime(23, 59, 59).atZone(zoneId).toInstant());
+		// Create a wide search window around target date to safely cover both UTC and IST stored records
+		Date depStart = Date.from(depLocalDate.atStartOfDay(ZoneId.of("UTC")).minusHours(12).toInstant());
+		Date depEnd = Date.from(depLocalDate.plusDays(1).atStartOfDay(ZoneId.of("UTC")).plusHours(12).toInstant());
 
 		List<FlightEntity> flightList;
 		if (flightSearchProxy.getArrivalDate() != null) {
 			LocalDate arrLocalDate = flightSearchProxy.getArrivalDate().toInstant().atZone(zoneId)
 					.toLocalDate();
-			Date arrStart = Date.from(arrLocalDate.atStartOfDay(zoneId).toInstant());
-			Date arrEnd = Date.from(arrLocalDate.atTime(23, 59, 59).atZone(zoneId).toInstant());
+			Date arrStart = Date.from(arrLocalDate.atStartOfDay(ZoneId.of("UTC")).minusHours(12).toInstant());
+			Date arrEnd = Date.from(arrLocalDate.plusDays(1).atStartOfDay(ZoneId.of("UTC")).plusHours(12).toInstant());
 
 			flightList = repo.findFlightsInRange(flightSearchProxy.getDepartureAirport(),
 					flightSearchProxy.getArrivalAirport(), depStart, depEnd, arrStart, arrEnd,
@@ -248,26 +248,63 @@ public class FlightServiceImpl implements FlightService {
 			return true;
 		}
 
-		// If flight is scheduled for today, check its scheduled departure time
+		// If flight is scheduled for today, check its scheduled departure time string
 		if (flight.getDepartureTime() != null && !flight.getDepartureTime().trim().isEmpty()) {
-			String rawTime = flight.getDepartureTime().trim().toUpperCase()
-					.replaceAll("([0-9])([AP]M)", "$1 $2");
-			String[] patterns = { "h:mm a", "hh:mm a", "H:mm", "HH:mm", "h:mm:ss a", "H:mm:ss" };
-			for (String p : patterns) {
-				try {
-					LocalTime flightTime = LocalTime.parse(rawTime, DateTimeFormatter.ofPattern(p, Locale.ENGLISH));
-					return flightTime.isAfter(nowTime);
-				} catch (Exception ignored) {
-				}
+			LocalTime flightTime = parseFlightTime(flight.getDepartureTime());
+			if (flightTime != null) {
+				return flightTime.isAfter(nowTime);
 			}
 		}
 
-		// Fallback to departureDate timestamp if departureTime string parsing was inconclusive
+		// Fallback to departureDate timestamp only if it contains a non-midnight time
 		if (flight.getDepartureDate() != null) {
-			return flight.getDepartureDate().toInstant().isAfter(Instant.now());
+			LocalTime depTime = flight.getDepartureDate().toInstant()
+					.atZone(ZoneId.of("Asia/Kolkata")).toLocalTime();
+			if (depTime.getHour() != 0 || depTime.getMinute() != 0) {
+				return depTime.isAfter(nowTime);
+			}
 		}
 
 		return true;
+	}
+
+	private LocalTime parseFlightTime(String raw) {
+		if (raw == null || raw.trim().isEmpty()) {
+			return null;
+		}
+		// Clean up string: replace non-breaking spaces, normalize spaces
+		String clean = raw.replace('\u00A0', ' ').trim().toUpperCase()
+				.replaceAll("\\s+", " ")
+				.replaceAll("([0-9])([AP]M)", "$1 $2");
+
+		String[] patterns = {
+				"h:mm a", "hh:mm a", "H:mm", "HH:mm",
+				"h:mm:ss a", "hh:mm:ss a", "H:mm:ss", "HH:mm:ss"
+		};
+		for (String pattern : patterns) {
+			try {
+				return LocalTime.parse(clean, DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH));
+			} catch (Exception ignored) {
+			}
+		}
+
+		// Manual parsing fallback: e.g. "9:00 PM" or "21:00"
+		try {
+			boolean isPm = clean.contains("PM");
+			boolean isAm = clean.contains("AM");
+			String timeDigits = clean.replace("AM", "").replace("PM", "").trim();
+			String[] parts = timeDigits.split(":");
+			if (parts.length >= 2) {
+				int hour = Integer.parseInt(parts[0].trim());
+				int minute = Integer.parseInt(parts[1].trim());
+				if (isPm && hour < 12) hour += 12;
+				if (isAm && hour == 12) hour = 0;
+				return LocalTime.of(hour, minute);
+			}
+		} catch (Exception ignored) {
+		}
+
+		return null;
 	}
 
 	@Override
