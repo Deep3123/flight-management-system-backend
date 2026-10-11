@@ -19,10 +19,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import com.flight.management.domain.FlightEntity;
+import com.flight.management.proxy.AirportRouteProjection;
 
 public interface FlightRepo extends MongoRepository<FlightEntity, String> { // Use String or ObjectId as ID for MongoDB
 
@@ -41,5 +43,11 @@ public interface FlightRepo extends MongoRepository<FlightEntity, String> { // U
 	@Query("{ 'departureAirport': { $regex: ?0, $options: 'i' }, 'arrivalAirport': { $regex: ?1, $options: 'i' }, 'departureDate': { $gte: ?2, $lte: ?3 }, 'flightClass': { $regex: ?4, $options: 'i' } }")
 	List<FlightEntity> findFlightsByDeparture(String depAirport, String arrAirport, Date depStart, Date depEnd,
 			String flightClass);
+
+	@Aggregation(pipeline = {
+			"{ $group: { _id: { departureAirport: '$departureAirport', arrivalAirport: '$arrivalAirport' } } }",
+			"{ $project: { _id: 0, departureAirport: '$_id.departureAirport', arrivalAirport: '$_id.arrivalAirport' } }"
+	})
+	List<AirportRouteProjection> findDistinctAirportRoutes();
 
 }

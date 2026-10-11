@@ -28,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.flight.management.domain.FlightEntity;
+import com.flight.management.proxy.AirportRouteProjection;
 import com.flight.management.proxy.FlightProxy;
 import com.flight.management.proxy.FlightSearchProxy;
 import com.flight.management.repo.FlightRepo;
@@ -271,20 +272,20 @@ public class FlightServiceImpl implements FlightService {
 
 	@Override
 	public Map<String, Object> getAvailableAirports() {
-		List<FlightEntity> allFlights = repo.findAll();
+		List<AirportRouteProjection> routeProjections = repo.findDistinctAirportRoutes();
 		Set<String> departures = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 		Set<String> arrivals = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 		Set<String> allAirports = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 		Map<String, Set<String>> routes = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
-		for (FlightEntity f : allFlights) {
-			if (f.getDepartureAirport() != null && !f.getDepartureAirport().trim().isEmpty()) {
-				String dep = capitalizeWords(f.getDepartureAirport().trim());
+		for (AirportRouteProjection r : routeProjections) {
+			if (r.getDepartureAirport() != null && !r.getDepartureAirport().trim().isEmpty()) {
+				String dep = capitalizeWords(r.getDepartureAirport().trim());
 				departures.add(dep);
 				allAirports.add(dep);
 
-				if (f.getArrivalAirport() != null && !f.getArrivalAirport().trim().isEmpty()) {
-					String arr = capitalizeWords(f.getArrivalAirport().trim());
+				if (r.getArrivalAirport() != null && !r.getArrivalAirport().trim().isEmpty()) {
+					String arr = capitalizeWords(r.getArrivalAirport().trim());
 					arrivals.add(arr);
 					allAirports.add(arr);
 
