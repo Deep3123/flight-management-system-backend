@@ -1,6 +1,7 @@
 package com.flight.management.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,12 @@ public class FlightController {
 		}
 
 		return new ResponseEntity<>(new Response(result, HttpStatus.CREATED.toString()), HttpStatus.CREATED);
+	}
+
+	@GetMapping("/airports")
+	public ResponseEntity<?> getAvailableAirports() {
+		Map<String, Object> airports = service.getAvailableAirports();
+		return new ResponseEntity<>(airports, HttpStatus.OK);
 	}
 
 	@GetMapping("/get-all-flights-details")

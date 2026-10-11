@@ -33,8 +33,6 @@ public class FlightSearchProxy {
 	private Date departureDate;
 
 //	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	@FutureOrPresent(message = "Arrival date must be today or in the future.")
-	@NotNull(message = "Arrival date cannot be null.")
 	private Date arrivalDate;
 
 	@NotNull(message = "Person count cannot be null.")

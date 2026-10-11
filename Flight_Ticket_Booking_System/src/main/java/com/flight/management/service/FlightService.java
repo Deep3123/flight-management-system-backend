@@ -1,6 +1,7 @@
 package com.flight.management.service;
 
 import java.util.List;
+import java.util.Map;
 import com.flight.management.proxy.FlightProxy;
 import com.flight.management.proxy.FlightSearchProxy;
 import com.flight.management.proxy.Response;
@@ -19,4 +20,6 @@ public interface FlightService {
 	public List<FlightProxy> getFlightDetailsByUserDetails(FlightSearchProxy flightSearchProxy);
 
     public Response downloadAllFlightData();
+
+	public Map<String, Object> getAvailableAirports();
 }

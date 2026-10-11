@@ -2,12 +2,21 @@ package com.flight.management.service.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.text.NumberFormat;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.flight.management.proxy.Response;
@@ -186,34 +195,122 @@ public class FlightServiceImpl implements FlightService {
 
 //		System.err.println(flightSearchProxy);
 
-		// Convert java.util.Date to LocalDate
-		LocalDate depLocalDate = flightSearchProxy.getDepartureDate().toInstant().atZone(ZoneId.systemDefault())
+		ZoneId zoneId = ZoneId.of("Asia/Kolkata");
+		LocalDate today = LocalDate.now(zoneId);
+		LocalTime nowTime = LocalTime.now(zoneId);
+
+		// Convert java.util.Date to LocalDate in Indian time zone
+		LocalDate depLocalDate = flightSearchProxy.getDepartureDate().toInstant().atZone(zoneId)
 				.toLocalDate();
 
-		LocalDate arrLocalDate = flightSearchProxy.getArrivalDate().toInstant().atZone(ZoneId.systemDefault())
-				.toLocalDate();
+		// If user searched for a past date, return no flights immediately
+		if (depLocalDate.isBefore(today)) {
+			return null;
+		}
 
-		// Create start and end of the day for both departure and arrival dates
-		Date depStart = Date.from(depLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-		Date depEnd = Date.from(depLocalDate.atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant());
+		// Create start and end of day
+		Date depStart = Date.from(depLocalDate.atStartOfDay(zoneId).toInstant());
+		Date depEnd = Date.from(depLocalDate.atTime(23, 59, 59).atZone(zoneId).toInstant());
 
-		Date arrStart = Date.from(arrLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-		Date arrEnd = Date.from(arrLocalDate.atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant());
+		List<FlightEntity> flightList;
+		if (flightSearchProxy.getArrivalDate() != null) {
+			LocalDate arrLocalDate = flightSearchProxy.getArrivalDate().toInstant().atZone(zoneId)
+					.toLocalDate();
+			Date arrStart = Date.from(arrLocalDate.atStartOfDay(zoneId).toInstant());
+			Date arrEnd = Date.from(arrLocalDate.atTime(23, 59, 59).atZone(zoneId).toInstant());
 
-		// Use a custom query in the repository with $gte and $lte
-		List<FlightEntity> flightList = repo.findFlightsInRange(flightSearchProxy.getDepartureAirport(),
-				flightSearchProxy.getArrivalAirport(), depStart, depEnd, arrStart, arrEnd,
-				flightSearchProxy.getFlightClass());
+			flightList = repo.findFlightsInRange(flightSearchProxy.getDepartureAirport(),
+					flightSearchProxy.getArrivalAirport(), depStart, depEnd, arrStart, arrEnd,
+					flightSearchProxy.getFlightClass());
+		} else {
+			flightList = repo.findFlightsByDeparture(flightSearchProxy.getDepartureAirport(),
+					flightSearchProxy.getArrivalAirport(), depStart, depEnd,
+					flightSearchProxy.getFlightClass());
+		}
 
-		if (!flightList.isEmpty()) {
-//			System.err.println(flightList);
-			return MapperUtil.convertListofValue(
-					flightList.stream().filter(obj -> obj.getSeatsAvailable() >= flightSearchProxy.getPersonCount())
-							.collect(Collectors.toList()),
-					FlightProxy.class);
+		if (flightList != null && !flightList.isEmpty()) {
+			List<FlightEntity> activeFutureFlights = flightList.stream()
+					.filter(obj -> obj.getSeatsAvailable() != null && obj.getSeatsAvailable() >= flightSearchProxy.getPersonCount())
+					.filter(obj -> isFlightInFuture(obj, depLocalDate, today, nowTime))
+					.collect(Collectors.toList());
+
+			if (!activeFutureFlights.isEmpty()) {
+				return MapperUtil.convertListofValue(activeFutureFlights, FlightProxy.class);
+			}
 		}
 		return null;
+	}
 
+	private boolean isFlightInFuture(FlightEntity flight, LocalDate depLocalDate, LocalDate today, LocalTime nowTime) {
+		// If flight is scheduled on a future date, it is in the future
+		if (depLocalDate.isAfter(today)) {
+			return true;
+		}
+
+		// If flight is scheduled for today, check its scheduled departure time
+		if (flight.getDepartureTime() != null && !flight.getDepartureTime().trim().isEmpty()) {
+			String rawTime = flight.getDepartureTime().trim().toUpperCase()
+					.replaceAll("([0-9])([AP]M)", "$1 $2");
+			String[] patterns = { "h:mm a", "hh:mm a", "H:mm", "HH:mm", "h:mm:ss a", "H:mm:ss" };
+			for (String p : patterns) {
+				try {
+					LocalTime flightTime = LocalTime.parse(rawTime, DateTimeFormatter.ofPattern(p, Locale.ENGLISH));
+					return flightTime.isAfter(nowTime);
+				} catch (Exception ignored) {
+				}
+			}
+		}
+
+		// Fallback to departureDate timestamp if departureTime string parsing was inconclusive
+		if (flight.getDepartureDate() != null) {
+			return flight.getDepartureDate().toInstant().isAfter(Instant.now());
+		}
+
+		return true;
+	}
+
+	@Override
+	public Map<String, Object> getAvailableAirports() {
+		List<FlightEntity> allFlights = repo.findAll();
+		Set<String> departures = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+		Set<String> arrivals = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+		Set<String> allAirports = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+		Map<String, Set<String>> routes = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
+		for (FlightEntity f : allFlights) {
+			if (f.getDepartureAirport() != null && !f.getDepartureAirport().trim().isEmpty()) {
+				String dep = capitalizeWords(f.getDepartureAirport().trim());
+				departures.add(dep);
+				allAirports.add(dep);
+
+				if (f.getArrivalAirport() != null && !f.getArrivalAirport().trim().isEmpty()) {
+					String arr = capitalizeWords(f.getArrivalAirport().trim());
+					arrivals.add(arr);
+					allAirports.add(arr);
+
+					routes.computeIfAbsent(dep, k -> new TreeSet<>(String.CASE_INSENSITIVE_ORDER)).add(arr);
+				}
+			}
+		}
+
+		Map<String, Object> result = new HashMap<>();
+		result.put("airports", new ArrayList<>(allAirports));
+		result.put("departureAirports", new ArrayList<>(departures));
+		result.put("arrivalAirports", new ArrayList<>(arrivals));
+		result.put("routes", routes);
+		return result;
+	}
+
+	private String capitalizeWords(String str) {
+		if (str == null || str.isEmpty()) return str;
+		String[] words = str.toLowerCase().split("\\s+");
+		StringBuilder sb = new StringBuilder();
+		for (String w : words) {
+			if (!w.isEmpty()) {
+				sb.append(Character.toUpperCase(w.charAt(0))).append(w.substring(1)).append(" ");
+			}
+		}
+		return sb.toString().trim();
 	}
 
     @Override
